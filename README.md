@@ -11,9 +11,12 @@
 
 - A debug bar panel for inspecting `timber-extended-templates` suggestions.
 
-#### Theme modules you can activate.
+#### Theme features you can activate.
 
 ##### `timber-extended-templates`
+
+Replace the core PHP templating system with Timber and provide additional
+template suggestions.
 
 ```php
 add_theme_support('timber-extended-templates', [
@@ -26,17 +29,23 @@ add_theme_support('timber-extended-templates', [
 ]);
 ```
 
+To use this feature, clarify that your theme supports it with
+`add_theme_support` and then create an `index.twig` file in the `TEMPLATEPATH`
+location, or a location specifically added to `Timber::$dirname` in your theme.
+
 ##### `timber-extended-password-inheritance`
 
+If a post parent is password protected, so are it's children.
+
 ```php
-// If a post parent is password protected, so are it's children.
 add_theme_support('timber-extended-password-inheritance');
 ```
 
 ##### `timber-extended-twig-extensions`
 
+Add additional twig functions and filters.
+
 ```php
-// Add additional twig functions and filters.
 add_theme_support('timber-extended-twig-extensions', [
   // Add some core functions and filters to twig.
   'core',
