@@ -1,0 +1,29 @@
+{
+  "name": "generoi/wp-timber-extended",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "description": "Extends Timber and integrates it better with WP core",
+  "homepage": "https://github.com/generoi/wp-timber-extended",
+  "authors": [
+    {
+      "name": "Oskar Schöldström",
+      "email": "public@oxy.fi"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/generoi/wp-timber-extended/issues"
+  },
+  "require": {
+    "php": ">=5.6.0",
+    "composer/installers": "~1.0"
+  },
+  "archive" : {
+    "exclude": [
+      ".gitignore"
+    ]
+  }
+}
+
