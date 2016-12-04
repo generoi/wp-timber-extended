@@ -75,25 +75,33 @@ class TimberExtended {
     $this->features = $features;
   }
 
-  public static function get_page_type() {
-    if     (is_embed())             $type = 'embed';
-    elseif (is_404())               $type = '404';
-    elseif (is_search())            $type = 'search';
-    elseif (is_front_page())        $type = 'front_page';
-    elseif (is_home())              $type = 'home';
-    elseif (is_post_type_archive()) $type = 'post_type_archive';
-    elseif (is_tax())               $type = 'tax';
-    elseif (is_attachment())        $type = 'attachment';
-    elseif (is_single())            $type = 'single';
-    elseif (is_page())              $type = 'page';
-    elseif (is_singular())          $type = 'singular';
-    elseif (is_category())          $type = 'category';
-    elseif (is_tag())               $type = 'tag';
-    elseif (is_author())            $type = 'author';
-    elseif (is_date())              $type = 'date';
-    elseif (is_archive())           $type = 'archive';
+  public static function is_page_type($type) {
+    if (is_string($type)) {
+      $type = [$type];
+    }
+    return !empty(array_intersect($type, self::get_page_types()));
+  }
 
-    return apply_filters('timber_extended/templates/page_type', $type);
+  public static function get_page_types() {
+    $types = [];
+    if (is_embed())             $types[] = 'embed';
+    if (is_404())               $types[] = '404';
+    if (is_search())            $types[] = 'search';
+    if (is_front_page())        $types[] = 'front_page';
+    if (is_home())              $types[] = 'home';
+    if (is_post_type_archive()) $types[] = 'post_type_archive';
+    if (is_tax())               $types[] = 'tax';
+    if (is_attachment())        $types[] = 'attachment';
+    if (is_single())            $types[] = 'single';
+    if (is_page())              $types[] = 'page';
+    if (is_singular())          $types[] = 'singular';
+    if (is_category())          $types[] = 'category';
+    if (is_tag())               $types[] = 'tag';
+    if (is_author())            $types[] = 'author';
+    if (is_date())              $types[] = 'date';
+    if (is_archive())           $types[] = 'archive';
+
+    return apply_filters('timber_extended/templates/page_types', $types);
   }
 
 }

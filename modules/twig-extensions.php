@@ -10,7 +10,7 @@ use Twig_Extension_StringLoader;
 class TwigExtensions extends \TimberExtended {
 
   public function init() {
-    $features = get_theme_support('timber-extended-templates');
+    $features = get_theme_support('timber-extended-twig-extensions');
     if (!empty($features[0])) {
       $this->setThemeFeatures($features[0]);
     }
@@ -47,6 +47,8 @@ class TwigExtensions extends \TimberExtended {
     // Get terms.
     // Usage: {% set posts = get_terms('category_name', {'parent': 0}) %}
     $twig->addFunction('get_terms', new Twig_SimpleFunction('get_terms', [$this, 'fn_get_terms']));
+
+    return $twig;
   }
 
   public function add_contrib($twig) {
@@ -64,6 +66,8 @@ class TwigExtensions extends \TimberExtended {
     // Return a WPML translated object permalink.
     // Usage: {{ wpml_url('contact', 'page') }}
     $twig->addFunction('wpml_url', new Twig_SimpleFunction('wpml_url', [$this, 'fn_wpml_url']));
+
+    return $twig;
   }
 
   public function add_functional($twig) {
@@ -79,6 +83,8 @@ class TwigExtensions extends \TimberExtended {
     // @todo inefficient.
     // Usage: {{ posts|group_by_term('category') }}
     $twig->addFilter('group_by_term', new Twig_SimpleFilter('group_by_term', [$this, 'filter_group_by_term']));
+
+    return $twig;
   }
 
   // Core

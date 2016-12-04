@@ -16,7 +16,8 @@ use Timber;
  *   </li>
  * {% endfor %}
  */
-class Menu extends Timber\Menu {
+class Menu extends Timber\Menu
+{
   public $MenuItemClass = 'TimberExtended\MenuItem';
 
   public $classes = array();
@@ -28,13 +29,13 @@ class Menu extends Timber\Menu {
   public function __construct($slug = 0) {
     parent::__construct($slug);
 
-    $this->classPrefix = apply_filter('timber-extended/menu-class-prefix', "nav-{$this->slug}", $this->slug);
+    $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $this->slug);
     $this->add_class($this->classPrefix);
   }
 
   public function add_class($class_name) {
     $this->classes[] = $class_name;
-    $this->class .= ' '. $class_name;
+    $this->class .= ' ' . $class_name;
   }
 
   public function get_items() {

@@ -25,7 +25,7 @@ class LanguageMenu extends Menu {
 
   public function __construct($slug = 0) {
     $this->slug = $slug;
-    $this->classPrefix = apply_filter('timber-extended/menu-class-prefix', "nav-{$this->slug}", $this->slug);
+    $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $this->slug);
     $this->add_class($this->classPrefix);
     $this->init($this->slug);
   }
@@ -37,6 +37,9 @@ class LanguageMenu extends Menu {
 
   protected function init($menu_id) {
     $languages = apply_filters('wpml_active_languages', null, $this->options);
+    if (empty($languages)) {
+      $languages = [];
+    }
     foreach ($languages as $langcode => &$language) {
       $language = (object) $language;
 
