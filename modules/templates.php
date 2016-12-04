@@ -52,10 +52,6 @@ class Templates extends \TimberExtended {
       $context['posts'] = Timber::get_posts();
     }
 
-    elseif (\TimberExtended::is_page_type(['404'])) {
-     // nothing
-    }
-
     elseif (\TimberExtended::is_page_type(['front_page'])) {
       $post = get_post();
       if (isset($post)) {
@@ -68,10 +64,6 @@ class Templates extends \TimberExtended {
     elseif (\TimberExtended::is_page_type(['tax', 'category', 'tag'])) {
       $context['term'] = new Timber\Term();
       $context['posts'] = Timber::get_posts();
-
-      if ($this->hasThemeFeature('context_add_terms') && $context['term']->taxonomy) {
-        $context['terms'] = Timber::get_terms($context['term']->taxonomy);
-      }
     }
 
     elseif (\TimberExtended::is_page_type(['author'])) {
@@ -103,16 +95,14 @@ class Templates extends \TimberExtended {
    * Add template suggestions.
    */
   public function add_template_suggestions($templates) {
+    // Suggest twig templates before php templates.
     if (apply_filters('timber_extended/templates/twig', true)) {
       foreach ($templates as $idx => $template) {
         array_splice($templates, $idx, 0, str_replace('.php', '.twig', $template));
       }
     }
 
-    if ($this->hasThemeFeature('normalize_archive_templates')) {
-      $templates = $this->normalize_archive_templates($templates);
-    }
-
+    // Support BEM-baming conventions.
     if ($this->hasThemeFeature('bem_templates')) {
       $templates = $this->add_bem_templates($templates);
     }
@@ -156,55 +146,6 @@ class Templates extends \TimberExtended {
     }
     return $templates;
   }
-
-  /**
-   * Normalize all category-like pages to also use an archive template.
-   */
-  protected function normalize_archive_templates($templates) {
-    $archive_templates = [];
-
-    if (\TimberExtended::is_page_type(['home'])) {
-      array_push($templates, 'archive.twig');
-    }
-
-    // @see get_category_template().
-    if (\TimberExtended::is_page_type(['category', 'tag'])) {
-      $term = get_queried_object();
-      if (!empty($term->slug)) {
-        $slug_decoded = urldecode($term->slug);
-        if ($slug_decoded !== $term->slug) {
-          $archive_templates[] = "archive-{$slug_decoded}.twig";
-        }
-        $archive_templates[] = "archive-{$term->slug}.twig";
-        $archive_templates[] = "archive-{$term->term_id}.twig";
-        $archive_templates[] = "archive.twig";
-
-        // Last two elements are archive.twig and index.twig
-        array_splice($templates, -2, 0, $archive_templates);
-      }
-    }
-
-    // @see get_taxonomy_template().
-    if (\TimberExtended::is_page_type('tax')) {
-      $term = get_queried_object();
-      if (!empty($term->slug)) {
-        $taxonomy = $term->taxonomy;
-        $slug_decoded = urldecode($term->slug);
-        if ($slug_decoded !== $term->slug) {
-          $archive_templates[] = "archive-{$taxonomy}-{$slug_decoded}.twig";
-        }
-        $archive_templates[] = "archive-{$taxonomy}-{$term->slug}.twig";
-        $archive_templates[] = "archive-{$taxonomy}.twig";
-        $archive_templates[] = "archive.twig";
-
-        // Last two elements are archive.twig and index.twig
-        array_splice($templates, -2, 0, $archive_templates);
-      }
-    }
-
-    return $templates;
-  }
-
 }
 
 Templates::get_instance()->init();
