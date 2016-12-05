@@ -16,7 +16,7 @@ use Timber\CoreInterface;
  *
  * 3. Add this content to it:
  *
- *    $context['widget'] = new \Timber\Widget($acfw);
+ *    $context['widget'] = new \TimberExtended\Widget($acfw);
  *    $context['widget']->init(get_defined_vars());
  *    Timber::render(['widget--' . $context['widget']->widget_id, 'widget.twig'], $context);
  *
