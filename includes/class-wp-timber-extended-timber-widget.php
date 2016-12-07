@@ -53,7 +53,7 @@ class Widget extends Core implements CoreInterface {
     'args', 'context', 'name', 'id', 'params', 'instance', 'templates',
   );
 
-  public function __construct( $id ) {
+  public function __construct($id) {
     $this->id = $id;
     $this->acfw = $id;
   }
@@ -87,6 +87,12 @@ class Widget extends Core implements CoreInterface {
       }
       $this->import($info['instance'], $force);
     }
+
+    // Don't shadow ACFW.
+    if (empty($this->title)) {
+      unset($this->title);
+    }
+
     // Remove some properties
     $filter = array_combine($this->filterProperties, $this->filterProperties);
     $info = array_diff_key($info, $filter);
@@ -96,20 +102,24 @@ class Widget extends Core implements CoreInterface {
     $this->add_class('widget--' . strtolower(sanitize_html_class($this->widget_name)));
   }
 
-  public function add_class( $class_name ) {
+  public function add_class($class_name) {
     $this->classes[] = $class_name;
     $this->class .= ' ' . $class_name;
   }
 
-  public function meta( $field_name ) {
+  public function meta($field_name) {
     return $this->get_meta_field($field_name);
   }
 
-  public function get_meta_field( $field_name ) {
-    if ( !isset($this->$field_name) ) {
-      $field_value = get_field($field_name, $this->acfw);
+  public function get_meta_field($field_name) {
+    if (!isset($this->$field_name)) {
+      $field_value = $this->get_field($field_name);
       $this->$field_name = $field_value;
     }
     return $this->$field_name;
+  }
+
+  public function get_field($field_name) {
+    return get_field($field_name, $this->acfw);
   }
 }
