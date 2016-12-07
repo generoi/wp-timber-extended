@@ -82,12 +82,20 @@ class Templates extends \TimberExtended {
    * we render it with Timber.
    */
   public function set_template_include($template) {
+    if (substr($template, -5) != '.twig') {
+      return $template;
+    }
     $context = Timber::get_context();
     $context['template_file'] = basename($template);
     list($template_type) = explode('-', str_replace('.twig', '', $context['template_file']));
     $context['template_type'] = $template_type;
 
-    Timber::render($template, $context);
+    $html = Timber::fetch($template, $context);
+    if (trim($html)) {
+      echo $html;
+    } else {
+      echo sprintf(__('Template %s did not output any content.', 'wp-timber-extended'), $template);
+    }
     return false;
   }
 
