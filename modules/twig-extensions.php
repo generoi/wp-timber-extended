@@ -187,6 +187,9 @@ class TwigExtensions extends \TimberExtended {
   }
 
   public function filter_filter($array, $key, $value = NULL) {
+    if (!is_array($array)) {
+      return [];
+    }
     return array_filter($array, function ($item) use ($key, $value) {
       if (isset($value)) {
         if (is_object($item)) {
