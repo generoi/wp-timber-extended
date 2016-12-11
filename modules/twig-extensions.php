@@ -79,6 +79,14 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {{ posts|pluck('post_title') }}
     $twig->addFilter('pluck', new Twig_SimpleFilter('pluck', [$this, 'filter_pluck']));
 
+    // Pluck a property from a list of objects or arrays.
+    // Usage: {{ block_grid|values|join(' ') }}
+    $twig->addFilter('values', new Twig_SimpleFilter('values', [$this, 'filter_values']));
+
+    // Pluck a property from a list of objects or arrays.
+    // Usage: {{ block_grid|keys|join(' ') }}
+    $twig->addFilter('keys', new Twig_SimpleFilter('keys', [$this, 'filter_keys']));
+
     // Group a set of posts by a term.
     // @todo inefficient.
     // Usage: {{ posts|group_by_term('category') }}
@@ -162,6 +170,20 @@ class TwigExtensions extends \TimberExtended {
       }
     }
     return $return;
+  }
+
+  public function filter_keys($array) {
+    if (is_array($array)) {
+      return array_keys($array);
+    }
+    return [];
+  }
+
+  public function filter_values($array) {
+    if (is_array($array)) {
+      return array_values($array);
+    }
+    return [];
   }
 
   public function filter_filter($array, $key, $value = NULL) {
