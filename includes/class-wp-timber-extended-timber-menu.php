@@ -33,6 +33,15 @@ class Menu extends Timber\Menu
     $this->add_class($this->classPrefix);
   }
 
+  public function set_prefix($new) {
+    $old = $this->classPrefix;
+    $this->classes = array_diff($this->classes, [$old]);
+    $this->class = implode(' ', $this->classes);
+    $this->classPrefix = $new;
+    $this->add_class($new);
+    return $new;
+  }
+
   public function add_class($class_name) {
     $this->classes[] = $class_name;
     $this->class .= ' ' . $class_name;
@@ -40,23 +49,29 @@ class Menu extends Timber\Menu
 
   public function get_items() {
     $items = parent::get_items();
-
     foreach ($items as $item) {
-      $item->add_class($this->classPrefix . '__item');
-      $item->add_link_class($this->classPrefix . '__link');
-
-      if ($item->current || $item->current_item_ancestor || $this->is_childpage($item->menu_object->object_id)) {
-        $item->add_class($this->classPrefix . '__item--active');
-        $item->add_class('active');
-      }
+      $this->add_item_classes($item, $this->classPrefix);
     }
     return $items;
+  }
+
+  public static function add_item_classes($item, $prefix) {
+    $item->classPrefix = $prefix;
+
+    $item->add_class($prefix . '__item');
+    $item->add_link_class($prefix . '__link');
+
+    if ($item->current || $item->current_item_ancestor || self::is_childpage($item->menu_object->object_id)) {
+      $item->add_class($prefix . '__item--active');
+      $item->add_link_class($prefix . '__link--active');
+      $item->add_class('active');
+    }
   }
 
   /**
    * Determine if a post is a descendant of the current page.
    */
-  protected function is_childpage($pid, $post = NULL) {
+  protected static function is_childpage($pid, $post = NULL) {
     if (is_null($post)) {
       $post = get_post();
     }
