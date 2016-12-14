@@ -191,6 +191,7 @@ class TwigExtensions extends \TimberExtended {
       return [];
     }
     return array_filter($array, function ($item) use ($key, $value) {
+      // Filter by value.
       if (isset($value)) {
         if (is_object($item)) {
           return $item->$key === $value;
@@ -200,14 +201,22 @@ class TwigExtensions extends \TimberExtended {
         }
         return FALSE;
       }
+      // Filter by key existance.
       else {
         if (is_object($item)) {
           return isset($item->$key);
         }
         elseif (is_array($item)) {
-          return isset($item[$key]);
+          // Sequential array.
+          if (array_values($item) === $item) {
+            return in_array($key, $item);
+          }
+          // Associative array.
+          else {
+            return isset($item[$key]);
+          }
         }
-        return FALSE;
+        return $item === $key;
       }
     });
   }
