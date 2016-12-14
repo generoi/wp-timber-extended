@@ -14,6 +14,11 @@ class TimberBasics extends \TimberExtended {
     $context['site']->logo = new Timber\Image(get_site_icon_url());
     // Timber doesn't support bedrock-like directory structures.
     $context['site']->siteurl = get_site_url();
+    // Add Yoast social options if available.
+    if (class_exists('WPSEO_Options')) {
+      $context['site']->social = \WPSEO_Options::get_option('wpseo_social');
+    }
+    return $context;
   }
 }
 
