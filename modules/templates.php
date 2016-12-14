@@ -28,6 +28,9 @@ class Templates extends \TimberExtended {
       add_filter("${type}_template_hierarchy", [$this, 'add_template_suggestions']);
     }
 
+    // add_filter('wc_get_template_part', [$this, 'add_wc_template_suggestions'], 10, 3);
+    add_filter('wc_get_template', [$this, 'wc_get_template'], 10, 5);
+
     add_filter('template_include', [$this, 'set_template_include']);
     add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
   }
@@ -97,6 +100,18 @@ class Templates extends \TimberExtended {
       echo sprintf(__('Template %s did not output any content.', 'wp-timber-extended'), $template);
     }
     return false;
+  }
+
+  public function wc_get_template($located, $template_name, $args, $template_path, $default_path) {
+    if (apply_filters('timber_extended/templates/twig', true)) {
+      $twig_template_name = str_replace('.php', '.twig', $template_name);
+      $twig_template = wc_locate_template($twig_template_name);
+      if (file_exists($twig_template)) {
+        Timber::render($twig_template, $args);
+        return locate_template('index.php');
+      }
+    }
+    return $located;
   }
 
   /**
