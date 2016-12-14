@@ -7,7 +7,7 @@ use Timber;
 class TimberBasics extends \TimberExtended {
 
   public function init() {
-    add_filter('timber/context', [$this, 'add_timber_context'], 1, 1);
+    add_filter('timber/context', [$this, 'add_timber_context'], 9, 1);
   }
 
   public function add_timber_context($context) {
