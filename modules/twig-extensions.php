@@ -48,6 +48,13 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {% set posts = get_terms('category_name', {'parent': 0}) %}
     $twig->addFunction('get_terms', new Twig_SimpleFunction('get_terms', [$this, 'fn_get_terms']));
 
+    // Get the dimensions of a defined image size.
+    // Usage:
+    // {% set dimensions = get_image_size('teaser') %}
+    // <img src="{{thumbnail|resize(dimensions.width, dimensions.height, dimensions.crop)}}">
+    // @see https://codex.wordpress.org/Function_Reference/get_intermediate_image_sizes
+    $twig->addFunction('get_image_size', new Twig_SimpleFunction('get_image_size', [$this, 'fn_get_image_size']));
+
     return $twig;
   }
 
@@ -126,6 +133,28 @@ class TwigExtensions extends \TimberExtended {
 
   public function fn_get_terms($category, $options = NULL) {
     return Timber::get_terms($category, $this->toArray($options));
+  }
+
+  public function fn_get_image_size($size) {
+    global $_wp_additional_image_sizes;
+    $sizes = [];
+    foreach (get_intermediate_image_sizes() as $_size) {
+      if (in_array($_size, array('thumbnail', 'medium', 'medium_large', 'large'))) {
+        $sizes[$_size]['width']  = get_option("{$_size}_size_w");
+        $sizes[$_size]['height'] = get_option("{$_size}_size_h");
+        $sizes[$_size]['crop']   = (bool) get_option("{$_size}_crop");
+      } elseif (isset($_wp_additional_image_sizes[$_size])) {
+        $sizes[$_size] = [
+          'width'  => $_wp_additional_image_sizes[$_size]['width'],
+          'height' => $_wp_additional_image_sizes[$_size]['height'],
+          'crop'   => $_wp_additional_image_sizes[$_size]['crop'],
+        ];
+      }
+    }
+    if (isset($sizes[$size])) {
+      return $sizes[$size];
+    }
+    return false;
   }
 
   public function filter_has_term($array, $term, $category = '') {
