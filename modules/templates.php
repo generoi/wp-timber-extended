@@ -30,6 +30,9 @@ class Templates extends \TimberExtended {
 
     // add_filter('wc_get_template_part', [$this, 'add_wc_template_suggestions'], 10, 3);
     add_filter('wc_get_template', [$this, 'wc_get_template'], 10, 5);
+    // Remove woocommerce own template loader.
+    remove_filter('template_include', ['WC_Template_Loader', 'template_loader']);
+
     add_filter('template_include', [$this, 'set_template_include'], ~PHP_INT_MAX);
     add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
   }
@@ -98,7 +101,7 @@ class Templates extends \TimberExtended {
     } else {
       echo sprintf(__('Template %s did not output any content.', 'wp-timber-extended'), $template);
     }
-    return false;
+    return locate_template('index.php');
   }
 
   public function wc_get_template($located, $template_name, $args, $template_path, $default_path) {
