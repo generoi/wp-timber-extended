@@ -8,9 +8,14 @@ class TimberBasics extends \TimberExtended {
 
   public function init() {
     add_filter('timber/context', [$this, 'add_timber_context'], 9, 1);
+    add_filter('timber/cache/location', [$this, 'timber_cache_location']);
     if (isset($GLOBALS['sitepress']) && $GLOBALS['sitepress']->get_default_language() !== ICL_LANGUAGE_CODE) {
       add_filter('home_url', [$this, 'filter_sitepress_home_url'], 10, 4);
     }
+  }
+
+  public function timber_cache_location() {
+    return WP_CONTENT_DIR . '/cache/timber';
   }
 
   public function add_timber_context($context) {
