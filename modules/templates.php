@@ -30,8 +30,7 @@ class Templates extends \TimberExtended {
 
     // add_filter('wc_get_template_part', [$this, 'add_wc_template_suggestions'], 10, 3);
     add_filter('wc_get_template', [$this, 'wc_get_template'], 10, 5);
-
-    add_filter('template_include', [$this, 'set_template_include']);
+    add_filter('template_include', [$this, 'set_template_include'], ~PHP_INT_MAX);
     add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
   }
 
