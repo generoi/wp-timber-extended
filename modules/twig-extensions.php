@@ -3,6 +3,7 @@
 namespace TimberExtended;
 
 use Timber;
+use TimberHelper;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
 use Twig_Extension_StringLoader;
@@ -55,6 +56,10 @@ class TwigExtensions extends \TimberExtended {
     // @see https://codex.wordpress.org/Function_Reference/get_intermediate_image_sizes
     $twig->addFunction('get_image_size', new Twig_SimpleFunction('get_image_size', [$this, 'fn_get_image_size']));
 
+    // Get terms.
+    // Usage: {{ section('text', 'foo', ob_function('woocommerce_template_single_price'), 'dark-blue') }}
+    $twig->addFunction('ob_function', new Twig_SimpleFunction('ob_function', [$this, 'fn_ob_function']));
+
     return $twig;
   }
 
@@ -81,6 +86,10 @@ class TwigExtensions extends \TimberExtended {
     // Filter a list of objects or arrays.
     // Usage: {{ posts|filter('post_type', 'product') }}
     $twig->addFilter('filter', new Twig_SimpleFilter('filter', [$this, 'filter_filter']));
+
+    // Apply a function to all items in a list.
+    // Usage: {{ post.organizers|map('intval') }}
+    $twig->addFilter('map', new Twig_SimpleFilter('map', [$this, 'filter_map']));
 
     // Pluck a property from a list of objects or arrays.
     // Usage: {{ posts|pluck('post_title') }}
@@ -157,6 +166,10 @@ class TwigExtensions extends \TimberExtended {
     return false;
   }
 
+  public function fn_ob_function($fn, ...$args) {
+    return TimberHelper::ob_function($fn, $args);
+  }
+
   public function filter_has_term($array, $term, $category = '') {
     if (is_object($array)) {
       return has_term($term, $category, $array);
@@ -213,6 +226,13 @@ class TwigExtensions extends \TimberExtended {
       return array_values($array);
     }
     return [];
+  }
+
+  public function filter_map($array, $function, ...$args) {
+    if (!is_array($array)) {
+      $array = [$array];
+    }
+    return array_map($function, $array, $args);
   }
 
   public function filter_filter($array, $key, $value = NULL) {
