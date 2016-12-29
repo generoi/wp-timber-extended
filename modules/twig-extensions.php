@@ -60,6 +60,10 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {{ section('text', 'foo', ob_function('woocommerce_template_single_price'), 'dark-blue') }}
     $twig->addFunction('ob_function', new Twig_SimpleFunction('ob_function', [$this, 'fn_ob_function']));
 
+    // Pass a string through the_content filters.
+    // Usage: {{ post.foobar|the_content }}
+    $twig->addFilter('the_content', new Twig_SimpleFilter('the_content', [$this, 'filter_the_content']));
+
     return $twig;
   }
 
@@ -168,6 +172,10 @@ class TwigExtensions extends \TimberExtended {
 
   public function fn_ob_function($fn, ...$args) {
     return TimberHelper::ob_function($fn, $args);
+  }
+
+  public function filter_the_content($content = '') {
+    return apply_filters('the_content', $content);
   }
 
   public function filter_has_term($array, $term, $category = '') {
