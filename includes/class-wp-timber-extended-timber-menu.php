@@ -61,7 +61,7 @@ class Menu extends Timber\Menu
     $item->add_class($prefix . '__item');
     $item->add_link_class($prefix . '__link');
 
-    if ($item->current || $item->current_item_ancestor || self::is_childpage($item->menu_object->object_id)) {
+    if ($item->current || $item->current_item_ancestor || static::is_childpage($item->menu_object->object_id)) {
       $item->add_class($prefix . '__item--active');
       $item->add_link_class($prefix . '__link--active');
       $item->add_class('active');
