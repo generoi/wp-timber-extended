@@ -133,7 +133,6 @@ class Templates extends \TimberExtended {
     }
 
     // Search for templates with the same paths as Timber::$dirname.
-    $locations = [];
     foreach (Timber\LocationManager::get_locations_theme_dir() as $dir) {
       // Sage manipulates the location of the TEMPLATEPATH as such:
       // STYLESHEETPATH    -> /var/www/wordpress/web/app/themes/sage
@@ -143,15 +142,11 @@ class Templates extends \TimberExtended {
         $dir = strpos($dir, $template_dir) === 0 ? str_replace($template_dir, '', $dir) : $dir;
       }
 
-      foreach ($templates as $template) {
-        $locations[] = trailingslashit($dir) . $template;
+      foreach ($templates as $idx => $template) {
+        array_splice($templates, $idx, 0, trailingslashit($dir) . $template);
       }
     }
-    // Add al the directories listed in Timber::$dirname, after the
-    // default TEMPLATEPATH directory.
-    $templates = array_merge($templates, $locations);
     $templates = apply_filters('timber_extended/templates/suggestions', $templates);
-
     return $templates;
   }
 
