@@ -91,6 +91,10 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {{ posts|filter('post_type', 'product') }}
     $twig->addFilter('filter', new Twig_SimpleFilter('filter', [$this, 'filter_filter']));
 
+    // Merge that works with objects.
+    // Usage: {{ widget|merge(widget.section|default({})) }}
+    $twig->addFilter('obj_merge', new Twig_SimpleFilter('obj_merge', [$this, 'filter_obj_merge']));
+
     // Apply a function to all items in a list.
     // Usage: {{ post.organizers|map('intval') }}
     $twig->addFilter('map', new Twig_SimpleFilter('map', [$this, 'filter_map']));
@@ -241,6 +245,23 @@ class TwigExtensions extends \TimberExtended {
       $array = [$array];
     }
     return array_map($function, $array, $args);
+  }
+
+  public function filter_obj_merge($array, $value) {
+    if (is_object($value)) {
+      $value = (array) $value;
+    }
+
+    if (is_object($array)) {
+      foreach ($value as $key => $val) {
+        $array->$key = $val;
+      }
+    }
+    elseif (is_array($array)) {
+      $array = array_merge($array, $value);
+    }
+
+    return $array;
   }
 
   public function filter_filter($array, $key, $value = NULL) {
