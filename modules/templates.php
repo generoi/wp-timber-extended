@@ -90,6 +90,9 @@ class Templates extends \TimberExtended {
     if (substr($template, -5) != '.twig') {
       return $template;
     }
+    // If the path is absolute, use the relative path from the theme.
+    $template = str_replace(TEMPLATEPATH, '', $template);
+
     $context = Timber::get_context();
     $context['template_file'] = basename($template);
     list($template_type) = explode('-', str_replace('.twig', '', $context['template_file']));
