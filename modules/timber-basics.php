@@ -40,6 +40,7 @@ class TimberBasics extends \TimberExtended {
     }
     if (preg_match('/[\w\-]+\.(jpg|png|gif|jpeg)/', $path)) {
       // get_home_url() unfolded without apply_filters().
+      global $pagenow;
       if (empty($blog_id) || !is_multisite()) {
         $home = get_option('home');
       } else {
