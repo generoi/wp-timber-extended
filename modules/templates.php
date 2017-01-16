@@ -112,6 +112,7 @@ class Templates extends \TimberExtended {
       $twig_template_name = str_replace('.php', '.twig', $template_name);
       $twig_template = wc_locate_template($twig_template_name);
       if (file_exists($twig_template)) {
+        $twig_template = str_replace(TEMPLATEPATH, '', $twig_template);
         Timber::render($twig_template, $args);
         return locate_template('index.php');
       }
