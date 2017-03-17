@@ -57,6 +57,14 @@ class TimberBasics extends \TimberExtended {
         }
       }
       $home = set_url_scheme($home, $scheme);
+      $path = ltrim($path, '/');
+
+      // For whatever reason timber might send an absolute path as the relative
+      // path.
+      if (strpos($path, $home) === 0) {
+        return $path;
+      }
+
       return $home . '/' . ltrim($path, '/');
     }
     return $url;
