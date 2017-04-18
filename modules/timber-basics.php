@@ -12,6 +12,9 @@ class TimberBasics extends \TimberExtended {
     if (isset($GLOBALS['sitepress']) && $GLOBALS['sitepress']->get_default_language() !== ICL_LANGUAGE_CODE) {
       add_filter('home_url', [$this, 'filter_sitepress_home_url'], 10, 4);
     }
+    if (function_exists('pll_current_language')) {
+      add_filter('home_url', [$this, 'filter_sitepress_home_url'], 10, 4);
+    }
   }
 
   public function timber_cache_location() {
@@ -34,11 +37,7 @@ class TimberBasics extends \TimberExtended {
    * paths.
    */
   public function filter_sitepress_home_url($url, $path, $scheme, $blog_id) {
-    global $sitepress;
-    if (!isset($sitepress) || $sitepress->get_default_language() == ICL_LANGUAGE_CODE) {
-      return $url;
-    }
-    if (preg_match('/[\w\-]+\.(jpg|png|gif|jpeg)/', $path)) {
+    if (preg_match('/[\w\-]+\.(jpg|png|gif|jpeg|webp)/', $path)) {
       // get_home_url() unfolded without apply_filters().
       global $pagenow;
       if (empty($blog_id) || !is_multisite()) {
@@ -65,7 +64,7 @@ class TimberBasics extends \TimberExtended {
         return $path;
       }
 
-      return $home . '/' . ltrim($path, '/');
+      return $home . '/' . $path;
     }
     return $url;
   }
