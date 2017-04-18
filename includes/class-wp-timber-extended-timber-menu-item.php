@@ -27,9 +27,6 @@ class MenuItem extends Timber\MenuItem {
 
   public function get_children() {
     $children = parent::get_children();
-    foreach ($children as $item) {
-      Menu::add_item_classes($item, $this->classPrefix);
-    }
-    return $children;
+    return Menu::recurse_item_classes($children, $this->classPrefix);
   }
 }
