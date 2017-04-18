@@ -47,6 +47,11 @@ class Menu extends Timber\Menu
     $this->class .= ' ' . $class_name;
   }
 
+  public function remove_class($class_name) {
+    $this->classes = array_diff($this->classes, [$class_name]);
+    $this->class = implode(' ', $this->classes);
+  }
+
   public function get_items() {
     $items = parent::get_items();
     return $this->recurse_item_classes($items, $this->classPrefix);

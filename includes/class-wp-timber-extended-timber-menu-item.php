@@ -25,6 +25,11 @@ class MenuItem extends Timber\MenuItem {
     $this->link_class .= ' '. $class_name;
   }
 
+  public function remove_class($class_name) {
+    $this->classes = array_diff($this->classes, [$class_name]);
+    $this->class = implode(' ', $this->classes);
+  }
+
   public function get_children() {
     $children = parent::get_children();
     return Menu::recurse_item_classes($children, $this->classPrefix);
