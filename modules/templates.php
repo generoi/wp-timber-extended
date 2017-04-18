@@ -13,10 +13,17 @@ use Timber;
  */
 class Templates extends \TimberExtended {
 
+  const DEFAULT_WIDGET_CLASS = 'TimberExtended\\Widget';
+
   public function init() {
     $features = get_theme_support('timber-extended-templates');
     if (!empty($features[0])) {
       $this->setThemeFeatures($features[0]);
+    }
+
+    // Render widgets with Twig.
+    if (apply_filters('timber-extended/timber-widget', true)) {
+      add_filter('dynamic_sidebar_params', [$this, 'wrap_widget_output']);
     }
 
     // @see get_query_template().
@@ -35,6 +42,75 @@ class Templates extends \TimberExtended {
 
     add_filter('template_include', [$this, 'set_template_include'], ~PHP_INT_MAX);
     add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
+  }
+
+  /**
+   * Replace the original display callback with our own wrapper.
+   */
+  public function wrap_widget_output($sidebar_params) {
+    if (is_admin()) {
+      return $sidebar_params;
+    }
+    global $wp_registered_widgets;
+    $current_widget_id = $sidebar_params[0]['widget_id'];
+    $wp_registered_widgets[$current_widget_id]['original_callback'] = $wp_registered_widgets[$current_widget_id]['callback'];
+    $wp_registered_widgets[$current_widget_id]['callback'] = [$this, 'display_widget'];
+    return $sidebar_params;
+  }
+
+  /**
+   * Render a widget.
+   */
+  public function display_widget() {
+    global $wp_registered_widgets;
+    $original_callback_params = func_get_args();
+    $widget_id   = $original_callback_params[0]['widget_id'];
+    $widget_name = $original_callback_params[0]['widget_name'];
+    $sidebar_id  = $original_callback_params[0]['id'];
+    $original_callback = $wp_registered_widgets[$widget_id]['original_callback'];
+    $wp_registered_widgets[$widget_id]['callback'] = $original_callback;
+
+    if (is_callable($original_callback)) {
+        $widget = $original_callback[0];
+
+        ob_start();
+        call_user_func_array($original_callback, $original_callback_params);
+        if ($widget_output = ob_get_clean()) {
+            $widget_output = $this->widget_output($widget_output, $widget_id, $widget_name, $widget, $sidebar_id);
+            echo apply_filters('widget_output', $widget_output, $widget_id, $widget_name, $widget, $sidebar_id);
+        }
+    }
+  }
+
+  /**
+   * Wrap widget output with a timber template.
+   */
+  public function widget_output($output, $widget_id, $widget_name, $widget, $sidebar_id) {
+    // ACFW hardcodes this value when no template is found.
+    if (strpos($output, 'No template found') !== FALSE) {
+        $output = NULL;
+    }
+    $settings = $widget->get_settings();
+    $settings = isset($settings[$widget->number]) ? $settings[$widget->number] : $settings;
+
+    $class_name = apply_filters('timber_extended/class_name', self::DEFAULT_WIDGET_CLASS, ['widget'], $widget);
+    $context['widget'] = new $class_name('widget_' . $widget_id);
+    $context['widget']->init(array_merge($settings, [
+        'widget_id' => $widget_id,
+        'sidebar_id' => $sidebar_id,
+        'content' => $output,
+    ]));
+
+    $templates = apply_filters('timber_extended/templates/suggestions', [
+        'widgets/widget--' . $widget_id . '.twig',
+        // @todo widget->slug?
+        'widgets/widget--' . strtolower(sanitize_html_class(str_replace(' ', '_', $widget_name))) . '.twig',
+        'widgets/widget--' . $sidebar_id . '.twig',
+        'widgets/widget.twig',
+    ]);
+
+    $output = Timber::fetch($templates, $context);
+    return $output;
   }
 
   /**

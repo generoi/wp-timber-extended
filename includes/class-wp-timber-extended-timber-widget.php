@@ -99,7 +99,9 @@ class Widget extends Core implements CoreInterface {
     $this->import($info, $force);
     $this->add_class('widget');
     $this->add_class('widget--' . $this->widget_id);
-    $this->add_class('widget--' . strtolower(sanitize_html_class(str_replace(' ', '_', $this->widget_name))));
+    if ($this->widget_name) {
+      $this->add_class('widget--' . strtolower(sanitize_html_class(str_replace(' ', '_', $this->widget_name))));
+    }
   }
 
   public function add_class($class_name) {
@@ -119,7 +121,10 @@ class Widget extends Core implements CoreInterface {
     return $this->$field_name;
   }
 
-  public function get_field($field_name) {
-    return get_field($field_name, $this->acfw);
+  public function get_field($field_name, $id = NULL) {
+      if (!isset($id)) {
+          $id = $this->acfw;
+      }
+    return get_field($field_name, $id);
   }
 }
