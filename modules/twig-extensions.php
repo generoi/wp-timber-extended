@@ -206,10 +206,28 @@ class TwigExtensions extends \TimberExtended {
           $groups[$term->term_id] = new \stdClass();
           $groups[$term->term_id]->term = new Timber\Term($term);
           $groups[$term->term_id]->posts = array();
+          $groups[$term->term_id]->children = array();
+          $groups[$term->term_id]->parents = array();
         }
         $groups[$term->term_id]->posts[] = $item;
       }
+
+      foreach ($groups as $term_id => $group) {
+        $parent_id = $group->term->parent;
+        if (!empty($parent_id)) {
+          $groups[$parent_id]->children[] = $term_id;
+
+          if (!in_array($parent_id, $group->parents)) {
+            $group->parents[] = $parent_id;
+            $grandparent_id = $groups[$parent_id]->term->parent;
+            if ($grandparent_id && !in_array($grandparent_id, $group->parents)) {
+              $group->parents[] = $grandparent_id;
+            }
+          }
+        }
+      }
     }
+
     return $groups;
   }
 
