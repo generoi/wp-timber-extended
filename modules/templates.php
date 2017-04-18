@@ -118,7 +118,7 @@ class Templates extends \TimberExtended {
    */
   public function add_default_context($context) {
     if (\TimberExtended::is_page_type(['embed', 'single', 'page', 'singular'])) {
-      $context['post'] = new Timber\Post();
+      $context['post'] = Timber\PostGetter::get_post(get_the_ID());
 
       $context['password_required'] = false;
       if (post_password_required($context['post']->ID)) {
@@ -126,32 +126,32 @@ class Templates extends \TimberExtended {
       }
 
     } elseif (\TimberExtended::is_page_type(['attachment'])) {
-      $context['post'] = new Timber\Post();
+      $context['post'] = Timber\PostGetter::get_post(get_the_ID());
     }
 
     elseif (\TimberExtended::is_page_type(['search', 'home', 'post_type_archive', 'date'])) {
-      $context['posts'] = Timber::get_posts();
+      $context['posts'] = new Timber\PostQuery();
     }
 
     elseif (\TimberExtended::is_page_type(['front_page'])) {
       $post = get_post();
       if (isset($post)) {
-        $context['post'] = new Timber\Post();
+        $context['post'] = Timber\PostGetter::get_post(get_the_ID());
       } else {
-        $context['posts'] = Timber::get_posts();
+        $context['posts'] = new Timber\PostQuery();
       }
     }
 
     elseif (\TimberExtended::is_page_type(['tax', 'category', 'tag'])) {
       $context['term'] = new Timber\Term();
-      $context['posts'] = Timber::get_posts();
+      $context['posts'] = new Timber\PostQuery();
     }
 
     elseif (\TimberExtended::is_page_type(['author'])) {
       if ($author_query = get_query_var('author')) {
         $context['author'] = new Timber\User($author_query);
       }
-      $context['posts'] = Timber::get_posts();
+      $context['posts'] = new Timber\PostQuery();
     }
 
     return $context;
