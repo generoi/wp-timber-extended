@@ -195,12 +195,17 @@ class TwigExtensions extends \TimberExtended {
   // Functional
 
   public function filter_group_by_term($array, $category) {
-    $groups = array();
+    $groups = [];
+    // Iterate over posts.
     foreach ($array as $item) {
+      // Get all post terms in specified category.
+      // @todo optimize.
       $terms = get_the_terms($item, $category);
       if (!$terms) {
         continue;
       }
+
+      // Group posts by term.
       foreach ($terms as $term) {
         if (!isset($groups[$term->term_id])) {
           $groups[$term->term_id] = new \stdClass();
@@ -212,21 +217,43 @@ class TwigExtensions extends \TimberExtended {
         $groups[$term->term_id]->posts[] = $item;
       }
 
+      // Iterate over the groups and attach children and parents ids.
       foreach ($groups as $term_id => $group) {
         $parent_id = $group->term->parent;
-        if (!empty($parent_id)) {
-          $groups[$parent_id]->children[] = $term_id;
 
-          if (!in_array($parent_id, $group->parents)) {
-            $group->parents[] = $parent_id;
-            $grandparent_id = $groups[$parent_id]->term->parent;
-            if ($grandparent_id && !in_array($grandparent_id, $group->parents)) {
-              $group->parents[] = $grandparent_id;
+        if ($parent_id != 0) {
+          $parent_id = (string) $parent_id;
+
+          if (isset($groups[$parent_id])) {
+            // Attach each child term to the parent.
+            $groups[$parent_id]->children[] = $term_id;
+
+            if (!in_array($parent_id, $group->parents)) {
+              $group->parents[] = $parent_id;
+
+              // If there's a grandparent attach that them too.
+              if (!empty($groups[$parent_id])) {
+                $grandparent_id = $groups[$parent_id]->term->parent;
+
+                if ($grandparent_id && !in_array($grandparent_id, $group->parents)) {
+                  $group->parents[] = $grandparent_id;
+                }
+              }
             }
           }
         }
       }
     }
+
+    uasort($groups, function ($a, $b) {
+      $a_order = isset($a->term->term_order) ? $a->term->term_order : 100;
+      $b_order = isset($b->term->term_order) ? $b->term->term_order : 100;
+
+      if ($a_order == $b_order) {
+        return 0;
+      }
+      return ($a_order < $b_order) ? -1 : 1;
+    });
 
     return $groups;
   }
