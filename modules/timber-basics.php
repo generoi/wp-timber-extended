@@ -9,12 +9,6 @@ class TimberBasics extends \TimberExtended {
   public function init() {
     add_filter('timber/context', [$this, 'add_timber_context'], 9, 1);
     add_filter('timber/cache/location', [$this, 'timber_cache_location']);
-    if (isset($GLOBALS['sitepress']) && $GLOBALS['sitepress']->get_default_language() !== ICL_LANGUAGE_CODE) {
-      add_filter('home_url', [$this, 'filter_sitepress_home_url'], 10, 4);
-    }
-    if (function_exists('pll_current_language')) {
-      add_filter('home_url', [$this, 'filter_sitepress_home_url'], 10, 4);
-    }
   }
 
   public function timber_cache_location() {
@@ -30,43 +24,6 @@ class TimberBasics extends \TimberExtended {
       $context['site']->social = \WPSEO_Options::get_option('wpseo_social');
     }
     return $context;
-  }
-
-  /**
-   * Fix when Timber uses WPML language-prefixed home_url() for relative image
-   * paths.
-   */
-  public function filter_sitepress_home_url($url, $path, $scheme, $blog_id) {
-    if (preg_match('/[\w\-]+\.(jpg|png|gif|jpeg|webp)/', $path)) {
-      // get_home_url() unfolded without apply_filters().
-      global $pagenow;
-      if (empty($blog_id) || !is_multisite()) {
-        $home = get_option('home');
-      } else {
-        switch_to_blog($blog_id);
-        $home = get_option('home');
-        restore_current_blog();
-      }
-
-      if (!in_array($scheme, array('http', 'https', 'relative'))) {
-        if (is_ssl() && !is_admin() && 'wp-login.php' !== $pagenow) {
-          $scheme = 'https';
-        } else {
-          $scheme = parse_url($url, PHP_URL_SCHEME);
-        }
-      }
-      $home = set_url_scheme($home, $scheme);
-      $path = ltrim($path, '/');
-
-      // For whatever reason timber might send an absolute path as the relative
-      // path.
-      if (strpos($path, $home) === 0) {
-        return $path;
-      }
-
-      return $home . '/' . $path;
-    }
-    return $url;
   }
 }
 
