@@ -59,6 +59,12 @@ class LanguageMenu extends Menu {
         $language->classes[] = $this->classPrefix . '__item--active';
         $language->class .= ' ' . $this->classPrefix . '__item--active';
       }
+
+      if (function_exists('PLL')) {
+        $lang = PLL()->model->get_language($langcode);
+        $language->disabled = isset($lang->active) ? !$lang->active : false;
+        $language->enabled = !$language->disabled;
+      }
     }
     $this->items = $languages;
   }
