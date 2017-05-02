@@ -53,8 +53,11 @@ class Menu extends Timber\Menu
   }
 
   public function get_items() {
-    $items = parent::get_items();
-    return $this->recurse_item_classes($items, $this->classPrefix);
+    if (!isset($this->_recursed_items)) {
+      $this->_recursed_items = parent::get_items();
+      $this->_recursed_items = $this->recurse_item_classes($this->_recursed_items, $this->classPrefix);
+    }
+    return $this->_recursed_items;
   }
 
   public static function recurse_item_classes($items, $prefix) {
@@ -83,7 +86,18 @@ class Menu extends Timber\Menu
   }
 
   public static function is_active($item) {
-    return $item->current || $item->current_item_ancestor || static::is_childpage($item->menu_object->object_id);
+    $active = $item->current || $item->current_item_ancestor || $item->current_item_parent || static::is_childpage($item->menu_object->object_id);
+    if ($active) {
+      return $active;
+    }
+    if ($item->children) {
+      foreach ($item->children as $child) {
+        if (self::is_active($child)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
