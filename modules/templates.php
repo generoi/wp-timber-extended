@@ -40,8 +40,11 @@ class Templates extends \TimberExtended {
     // Remove woocommerce own template loader.
     remove_filter('template_include', ['WC_Template_Loader', 'template_loader']);
 
-    add_filter('template_include', [$this, 'set_template_include'], ~PHP_INT_MAX);
     add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
+    // Do not override tailors filter.
+    if (!function_exists('tailor') || !tailor()->is_tailoring()) {
+        add_filter('template_include', [$this, 'set_template_include'], ~PHP_INT_MAX);
+    }
   }
 
   /**
