@@ -7,6 +7,7 @@ use TimberHelper;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
 use Twig_Extension_StringLoader;
+use WP_Query;
 
 class TwigExtensions extends \TimberExtended {
 
@@ -37,13 +38,10 @@ class TwigExtensions extends \TimberExtended {
 
     // Get posts.
     // Usage: {% set posts = get_posts({'post_type': 'page'}) %}
-    // Note: If you're using the pager functionality, you need to run get_pager()
-    // for the original WP_Query to be restored.
     $twig->addFunction('get_posts', new Twig_SimpleFunction('get_posts', [$this, 'fn_get_posts']));
 
-    // Get pager.
-    // Usage: {% set pager = get_pager() %}
-    $twig->addFunction('get_pager', new Twig_SimpleFunction('get_pager', [$this, 'fn_get_pager']));
+    // Get the paged number.
+    $twig->addFunction('get_paged', new Twig_SimpleFunction('get_paged', [$this, 'fn_get_paged']));
 
     // Get terms.
     // Usage: {% set posts = get_terms('category_name', {'parent': 0}) %}
@@ -116,36 +114,28 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {{ posts|group_by_term('category') }}
     $twig->addFilter('group_by_term', new Twig_SimpleFilter('group_by_term', [$this, 'filter_group_by_term']));
 
+    // Value filters.
+    $twig->addFilter('bool', new Twig_SimpleFilter('bool', 'boolval'));
+    $twig->addFilter('int', new Twig_SimpleFilter('int', 'intval'));
     return $twig;
   }
 
   // Core
 
   public function fn_get_posts($options = NULL) {
-    $options = $this->toArray($options);
-    if (is_string($options)) {
-      $post_type = $options;
-      $options = array();
-      $options['post_type'] = $post_type;
-    }
-    if (!empty($options['paged'])) {
-      global $paged;
-      if (!isset($paged) || !$paged){
-        $paged = 1;
+    if (!($options instanceof WP_Query)) {
+      $options = $this->toArray($options);
+      if (is_string($options)) {
+        $post_type = $options;
+        $options = array();
+        $options['post_type'] = $post_type;
       }
-      $options['paged'] = $paged;
-      query_posts($options);
-      $posts = Timber::get_posts($options);
-      // wp_reset_query() is called in get_pager().
-      return $posts;
     }
-    return Timber::get_posts($options);
+    return new Timber\PostQuery($options);
   }
 
-  public function fn_get_pager($options = array()) {
-    $pager = Timber::get_pagination($this->toArray($options));
-    wp_reset_query();
-    return $pager;
+  public function fn_get_paged() {
+    return get_query_var('paged') ? get_query_var('paged') : 1;
   }
 
   public function fn_get_terms($category, $options = NULL) {
