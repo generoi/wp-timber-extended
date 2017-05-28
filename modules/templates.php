@@ -40,11 +40,30 @@ class Templates extends \TimberExtended {
     // Remove woocommerce own template loader.
     remove_filter('template_include', ['WC_Template_Loader', 'template_loader']);
 
+    add_filter('tailor_partial', [$this, 'tailor_partial'], 10, 4);
+
     add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
     // Do not override tailors filter.
     if (!function_exists('tailor') || !tailor()->is_tailoring()) {
         add_filter('template_include', [$this, 'set_template_include'], ~PHP_INT_MAX);
     }
+  }
+
+  public function tailor_partial($partial, $slug, $name, $args = array()) {
+    $theme_partial_dir = apply_filters('tailor_theme_partial_dir', 'tailor/');
+    $theme_partial_dir = trailingslashit($theme_partial_dir);
+    $templates = [
+      "{$theme_partial_dir}/{$slug}--{$name}.twig",
+      "{$theme_partial_dir}/{$slug}-{$name}.twig",
+    ];
+    if ($template = locate_template($templates)) {
+      do_action("tailor_partial_{$slug}", $partial, $slug, $name);
+      $template = str_replace(TEMPLATEPATH, '', $template);
+      $context = $args;
+      Timber::render($template, $context);
+      return false;
+    }
+    return $partial;
   }
 
   /**
