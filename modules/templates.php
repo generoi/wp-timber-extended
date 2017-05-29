@@ -222,6 +222,15 @@ class Templates extends \TimberExtended {
    * Add template suggestions.
    */
   public function add_template_suggestions($templates) {
+    // If tailored, add a tailor variation.
+    if (apply_filters('timber_extended/templates/twig', true) && function_exists('tailor')) {
+      if ((is_page() || is_single()) && tailor()->is_tailored()) {
+        foreach ($templates as $idx => $template) {
+          array_splice($templates, $idx, 0, str_replace('.php', '-tailor.php', $template));
+        }
+      }
+    }
+
     // Suggest twig templates before php templates.
     if (apply_filters('timber_extended/templates/twig', true)) {
       foreach ($templates as $idx => $template) {
