@@ -29,7 +29,7 @@ class Menu extends Timber\Menu
   public function __construct($slug = 0) {
     parent::__construct($slug);
 
-    $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $this->slug);
+    $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $slug);
     $this->add_class($this->classPrefix);
   }
 
