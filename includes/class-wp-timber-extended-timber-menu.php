@@ -68,6 +68,14 @@ class Menu extends Timber\Menu
       // Recurse.
       $item->children = self::recurse_item_classes($item->children, $prefix);
       self::add_item_classes($item, $prefix);
+
+      // Move custom classes defined in UI to link rather than wrapper.
+      if (!empty($item->_menu_item_classes)) {
+        foreach ($item->_menu_item_classes as $custom_class) {
+          $item->remove_class($custom_class);
+          $item->add_link_class($custom_class);
+        }
+      }
     }
     return $items;
   }
