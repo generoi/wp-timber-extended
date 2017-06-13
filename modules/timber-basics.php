@@ -17,7 +17,9 @@ class TimberBasics extends \TimberExtended {
 
   public function add_timber_context($context) {
     $context['site']->theme_options = get_theme_mods();
-    $context['site']->icon = new Timber\Image(get_site_icon_url());
+    if ($icon = get_site_icon_url()) {
+      $context['site']->icon = new Timber\Image(get_site_icon_url());
+    }
     if ($logo_id = get_theme_mod('custom_logo')) {
       $context['site']->logo = new Timber\Image($logo_id);
     }
