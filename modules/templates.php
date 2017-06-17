@@ -243,20 +243,37 @@ class Templates extends \TimberExtended {
       $templates = $this->add_bem_templates($templates);
     }
 
-    // Search for templates with the same paths as Timber::$dirname.
+    // Remove the extra directories WP detects eg. when custom templates are
+    // in views/ subfolder.
     foreach (Timber\LocationManager::get_locations_theme_dir() as $dir) {
-      // Sage manipulates the location of the TEMPLATEPATH as such:
-      // STYLESHEETPATH    -> /var/www/wordpress/web/app/themes/sage
-      // TEMPLATEPATH     -> /var/www/wordpress/web/app/themes/sage/templates
-      if (TEMPLATEPATH != STYLESHEETPATH) {
-        $template_dir = trailingslashit(str_replace(STYLESHEETPATH . '/', '', TEMPLATEPATH));
-        $dir = strpos($dir, $template_dir) === 0 ? str_replace($template_dir, '', $dir) : $dir;
-      }
-
       foreach ($templates as $idx => $template) {
-        array_splice($templates, $idx, 0, trailingslashit($dir) . $template);
+        if (strpos($template, $dir) === 0) {
+          $template = str_replace(trailingslashit($dir), '', $template);
+          $templates[$idx] = $template;
+        }
       }
     }
+
+    // Search for templates with the same paths as Timber::$dirname.
+    foreach (Timber\LocationManager::get_locations_theme_dir() as $dir) {
+      foreach ($templates as $idx => $template) {
+        // If this timber path is a subdirectory, remove the base
+        // template: views/page.twig
+        // dir: views/pages
+        // timber_root_dir: views
+        // template: views/pages/page.twig
+        $timber_root_dir = explode('/', $dir);
+        $timber_root_dir = $timber_root_dir[0];
+        if (strpos($template, trailingslashit($timber_root_dir)) === 0) {
+          $template = substr($template, strlen(trailingslashit($timber_root_dir)));
+        }
+
+        if (strpos($template, $dir) !== 0) {
+          array_splice($templates, $idx, 0, trailingslashit($dir) . $template);
+        }
+      }
+    }
+    $templates = array_unique($templates);
     $templates = apply_filters('timber_extended/templates/suggestions', $templates);
     return $templates;
   }
