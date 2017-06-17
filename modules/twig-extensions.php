@@ -62,6 +62,18 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {{ post.foobar|the_content }}
     $twig->addFilter('the_content', new Twig_SimpleFilter('the_content', [$this, 'filter_the_content']));
 
+    // Strip all leading and trailing whitespace, newlines as well as html entity codes.
+    // Usage: {{post.get_preview()|wptrim}}
+    $twig->addFilter('wptrim', new Twig_SimpleFilter('wptrim', [$this, 'filter_wptrim']));
+
+    // Polylang integration
+    $twig->addFunction('pll__', new Twig_SimpleFunction('pll__', function ($string) {
+        return pll__($string);
+    }));
+    $twig->addFunction('pll_e', new Twig_SimpleFunction('pll_e', function ($string) {
+        return pll_e($string);
+    }));
+
     return $twig;
   }
 
@@ -170,6 +182,12 @@ class TwigExtensions extends \TimberExtended {
 
   public function filter_the_content($content = '') {
     return apply_filters('the_content', $content);
+  }
+
+  public function filter_wptrim($content = '') {
+    // @see https://stackoverflow.com/a/22004695/319855
+    $content = preg_replace('#^(<br\s*/?>|\s|&nbsp;)*(.+?)(<br\s*/?>|\s|&nbsp;)*$#i', '$2', $content);
+    return trim($content);
   }
 
   public function filter_has_term($array, $term, $category = '') {
