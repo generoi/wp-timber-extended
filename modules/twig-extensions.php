@@ -66,6 +66,8 @@ class TwigExtensions extends \TimberExtended {
     // Usage: {{post.get_preview()|wptrim}}
     $twig->addFilter('wptrim', new Twig_SimpleFilter('wptrim', [$this, 'filter_wptrim']));
 
+    $twig->addFunction('post', new Twig_SimpleFunction('post', [$this, 'fn_post']));
+
     // Polylang integration
     $twig->addFunction('pll__', new Twig_SimpleFunction('pll__', function ($string) {
         return pll__($string);
@@ -188,6 +190,10 @@ class TwigExtensions extends \TimberExtended {
     // @see https://stackoverflow.com/a/22004695/319855
     $content = preg_replace('#^(<br\s*/?>|\s|&nbsp;)*(.+?)(<br\s*/?>|\s|&nbsp;)*$#i', '$2', $content);
     return trim($content);
+  }
+
+  public function fn_post($pid) {
+    return Timber\PostGetter::get_post($pid);
   }
 
   public function filter_has_term($array, $term, $category = '') {
