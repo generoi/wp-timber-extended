@@ -188,7 +188,8 @@ class TwigExtensions extends \TimberExtended {
 
   public function filter_wptrim($content = '') {
     // @see https://stackoverflow.com/a/22004695/319855
-    $content = preg_replace('#^(<br\s*/?>|\s|&nbsp;)*(.+?)(<br\s*/?>|\s|&nbsp;)*$#i', '$2', $content);
+    $whitespace = '<br\s*/?>|\s|&nbsp;|<p>&nbsp;</p>';
+    $content = preg_replace('#^(' . $whitespace . ')*(.+?)(' . $whitespace . ')*$#mi', '$2', $content);
     return trim($content);
   }
 
