@@ -21,10 +21,6 @@ class Debug_Bar_TimberExtended extends \Debug_Bar_Panel {
   public function render() {
     $page_types = \TimberExtended::get_page_types();
 
-    if (function_exists('d')) {
-      d(Timber::get_context());
-    }
-
     echo '<h5>' . sprintf(__('These were the templates search for detected page types: <em>%s</em>'), implode(', ', $page_types)) . '</h5>';
 
     foreach ($this->template_suggestions as $templates) {
