@@ -90,6 +90,7 @@ class Menu extends Timber\Menu
       $item->add_class($prefix . '__item--active');
       $item->add_link_class($prefix . '__link--active');
       $item->add_class('active');
+      $item->add_class('is-active');
     }
   }
 
