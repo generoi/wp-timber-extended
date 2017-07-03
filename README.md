@@ -1,39 +1,41 @@
 # wp-timber-extended
 
-### Timber additions
+> A wordpress plugin extending [Timber](https://github.com/timber/timber/) with various features such as automatic template loading.
 
-- `TimberExtended\Widget` a timber widget object for accessing ACF Widget content.
-- `TimberExtended\Menu` an extended Timber\Menu which adds BEM classes to menu items.
-- `TimberExtended\MenuItem` an extended Timber\MenuItem which adds BEM classes to menu item as well as their links.
-- `TimberExtended\LanugageMenu` a TimberExtended\Menu-like dummy class which contains the WPML language as it's items.
+## Features
 
-### Other
+- Woocommerce support for partial templates
+- Tailor support for partial templates
+- Widgets rendered through twig templates
+- Inherit password protection from parent pages.
+- BEM classes for Timber Menus.
+- Language Menu for WPML and PLL.
+- A debug bar panel for inspecting template suggestions.
+- Basic additions to all timber contexts (theme mods, site icon, etc).
 
-- A debug bar panel for inspecting `timber-extended-templates` suggestions.
+## Theme features
 
-#### Theme features you can activate.
+You need to activate the features in your theme using `add_theme_support`
 
-##### `timber-extended-templates`
+### Automatic Timber templating system
 
-Replace the core PHP templating system with Timber and provide additional
-template suggestions.
+> Replace the core PHP templating system with Timber and provide additional template suggestions.
+
+To use this feature, clarify that your theme supports it with
+`add_theme_support` and then create an `index.twig` file in the `TEMPLATEPATH` location, or a location specifically added to `Timber::$dirname` in your theme.
 
 ```php
 add_theme_support('timber-extended-templates', [
-  // Use archive as the template for all category-like pages.
-  'normalize_archive_templates',
   // Use double dashes as the template variation separator.
   'bem_templates',
-  // Attach all terms of the active category on an archive page.
-  'context_add_terms',
 ]);
 ```
 
-To use this feature, clarify that your theme supports it with
-`add_theme_support` and then create an `index.twig` file in the `TEMPLATEPATH`
-location, or a location specifically added to `Timber::$dirname` in your theme.
+Regular PHP files will still be supported but twig versions will take precedence if available. You can inspect the template suggestions for each page if you're using the _Debug_ plugin. If the page is a [`tailored`](https://github.com/andrew-worsfold/tailor) page, there will also exist a `<type>-tailor.twig` suggestion.
 
-##### `timber-extended-password-inheritance`
+Depending on the type of page is being rendered, various global context variables will be available. Eg. category templates will have both `term` and `posts` available, while single posts have only a `post` object. In addition to these there's also `template_file` and `template_type` available.
+
+### Password inheritance from parent posts
 
 If a post parent is password protected, so are it's children.
 
@@ -41,7 +43,7 @@ If a post parent is password protected, so are it's children.
 add_theme_support('timber-extended-password-inheritance');
 ```
 
-##### `timber-extended-twig-extensions`
+### Additional twig extensions
 
 Add additional twig functions and filters.
 
@@ -54,4 +56,34 @@ add_theme_support('timber-extended-twig-extensions', [
   // Add some functional programming helpers to twig.
   'functional'
 ]);
+```
+
+## Bundled Timber classes
+
+- `TimberExtended\Widget`: Widget object for for ACFW or regular core widgets.
+- `TimberExtended\Menu`: Extended Timber\Menu adding BEM classes to menu items.
+- `TimberExtended\MenuItem`: Extended Timber\MenuItem adding BEM classes to menu item as well as their links.
+- `TimberExtended\LanugageMenu`: TimberExtended\Menu-like dummy class which contains the site languages as it's items (WPML/PLL support).
+
+## Filters API
+
+```php
+// Suggest class names to init objects.
+add_filter('timber_extended/class_name', function ($class_name, $types, $object) {
+  if (in_array('widget', $types)) {
+    $class_name = __NAMESPACE__ . '\\Widget';
+  }
+  return $class_name;
+}, 10, 3);
+
+// Modify the template suggestions
+add_filter('timber_extended/templates/suggestions', function ($templates) {
+  return $templates;
+});
+
+// Disable Twig suggestions.
+add_filter('timber_extended/templates/twig', '__return_false');
+
+// Disable Timber Widgets.
+add_filter('timber-extended/timber-widget', '__return_false');
 ```
