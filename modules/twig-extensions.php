@@ -54,6 +54,11 @@ class TwigExtensions extends \TimberExtended {
     // @see https://codex.wordpress.org/Function_Reference/get_intermediate_image_sizes
     $twig->addFunction('get_image_size', new Twig_SimpleFunction('get_image_size', [$this, 'fn_get_image_size']));
 
+    // Get the datauri of an image URL.
+    // Usage:
+    // {{thumbnail.src|resize(50)|datauri}}
+    $twig->addFilter('datauri', new Twig_SimpleFilter('datauri', [$this, 'filter_datauri']));
+
     // Get terms.
     // Usage: {{ section('text', 'foo', ob_function('woocommerce_template_single_price'), 'dark-blue') }}
     $twig->addFunction('ob_function', new Twig_SimpleFunction('ob_function', [$this, 'fn_ob_function']));
@@ -176,6 +181,21 @@ class TwigExtensions extends \TimberExtended {
       return $sizes[$size];
     }
     return false;
+  }
+
+  public function filter_datauri($image_url) {
+    $cid = 'datauri_' . substr(md5($image_url), 0, 6);
+    if (!($datauri = get_transient($cid))) {
+      $image_path = Timber\ImageHelper::get_server_location($image_url);
+      if (!file_exists($image_path)) {
+        return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+      }
+      $base64 = base64_encode(file_get_contents($image_path));
+      $mime = mime_content_type($image_path);
+      $datauri = "data:$mime;base64,$base64";
+      set_transient($cid, $datauri);
+    }
+    return $datauri;
   }
 
   public function fn_ob_function($fn, ...$args) {
