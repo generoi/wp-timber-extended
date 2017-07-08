@@ -344,9 +344,12 @@ class TwigExtensions extends \TimberExtended {
     return $array;
   }
 
-  public function filter_filter($array, $key, $value = NULL) {
+  public function filter_filter($array, $key = NULL, $value = NULL) {
     if (!is_array($array)) {
       return [];
+    }
+    if (is_null($key)) {
+      return array_filter($array);
     }
     return array_filter($array, function ($item) use ($key, $value) {
       // Filter by value.
