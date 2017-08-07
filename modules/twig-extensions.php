@@ -5,7 +5,6 @@ namespace TimberExtended;
 use Timber;
 use TimberHelper;
 use Twig_SimpleFilter;
-use Twig_SimpleFunction;
 use Twig_Extension_StringLoader;
 use WP_Query;
 
@@ -34,50 +33,50 @@ class TwigExtensions extends \TimberExtended {
     // Filter a list of posts (or one) by having a term.
     // @todo inefficient.
     // Usage: {% if post|has_term('project-2') %}
-    $twig->addFilter('has_term', new Twig_SimpleFilter('has_term', [$this, 'filter_has_term']));
+    $twig->addFilter(new Twig_SimpleFilter('has_term', [$this, 'filter_has_term']));
 
     // Get posts.
     // Usage: {% set posts = get_posts({'post_type': 'page'}) %}
-    $twig->addFunction('get_posts', new Twig_SimpleFunction('get_posts', [$this, 'fn_get_posts']));
+    $twig->addFunction(new Timber\Twig_Function('get_posts', [$this, 'fn_get_posts']));
 
     // Get the paged number.
-    $twig->addFunction('get_paged', new Twig_SimpleFunction('get_paged', [$this, 'fn_get_paged']));
+    $twig->addFunction(new Timber\Twig_Function('get_paged', [$this, 'fn_get_paged']));
 
     // Get terms.
     // Usage: {% set posts = get_terms('category_name', {'parent': 0}) %}
-    $twig->addFunction('get_terms', new Twig_SimpleFunction('get_terms', [$this, 'fn_get_terms']));
+    $twig->addFunction(new Timber\Twig_Function('get_terms', [$this, 'fn_get_terms']));
 
     // Get the dimensions of a defined image size.
     // Usage:
     // {% set dimensions = get_image_size('teaser') %}
     // <img src="{{thumbnail|resize(dimensions.width, dimensions.height, dimensions.crop)}}">
     // @see https://codex.wordpress.org/Function_Reference/get_intermediate_image_sizes
-    $twig->addFunction('get_image_size', new Twig_SimpleFunction('get_image_size', [$this, 'fn_get_image_size']));
+    $twig->addFunction(new Timber\Twig_Function('get_image_size', [$this, 'fn_get_image_size']));
 
     // Get the datauri of an image URL.
     // Usage:
     // {{thumbnail.src|resize(50)|datauri}}
-    $twig->addFilter('datauri', new Twig_SimpleFilter('datauri', [$this, 'filter_datauri']));
+    $twig->addFilter(new Twig_SimpleFilter('datauri', [$this, 'filter_datauri']));
 
     // Get terms.
     // Usage: {{ section('text', 'foo', ob_function('woocommerce_template_single_price'), 'dark-blue') }}
-    $twig->addFunction('ob_function', new Twig_SimpleFunction('ob_function', [$this, 'fn_ob_function']));
+    $twig->addFunction(new Timber\Twig_Function('ob_function', [$this, 'fn_ob_function']));
 
     // Pass a string through the_content filters.
     // Usage: {{ post.foobar|the_content }}
-    $twig->addFilter('the_content', new Twig_SimpleFilter('the_content', [$this, 'filter_the_content']));
+    $twig->addFilter(new Twig_SimpleFilter('the_content', [$this, 'filter_the_content']));
 
     // Strip all leading and trailing whitespace, newlines as well as html entity codes.
     // Usage: {{post.get_preview()|wptrim}}
-    $twig->addFilter('wptrim', new Twig_SimpleFilter('wptrim', [$this, 'filter_wptrim']));
+    $twig->addFilter(new Twig_SimpleFilter('wptrim', [$this, 'filter_wptrim']));
 
-    $twig->addFunction('post', new Twig_SimpleFunction('post', [$this, 'fn_post']));
+    $twig->addFunction(new Timber\Twig_Function('post', [$this, 'fn_post']));
 
     // Polylang integration
-    $twig->addFunction('pll__', new Twig_SimpleFunction('pll__', function ($string) {
+    $twig->addFunction(new Timber\Twig_Function('pll__', function ($string) {
         return pll__($string);
     }));
-    $twig->addFunction('pll_e', new Twig_SimpleFunction('pll_e', function ($string) {
+    $twig->addFunction(new Timber\Twig_Function('pll_e', function ($string) {
         return pll_e($string);
     }));
 
@@ -86,19 +85,19 @@ class TwigExtensions extends \TimberExtended {
 
   public function add_contrib($twig) {
     // Usage: {{ facetwp_display('facet', 'house_type') }}
-    $twig->addFunction('facetwp_display', new Twig_SimpleFunction('facetwp_display', [$this, 'fn_facetwp_display']));
+    $twig->addFunction(new Timber\Twig_Function('facetwp_display', [$this, 'fn_facetwp_display']));
 
     // Call kint debugger
     // Usage: {{ d(post) }}
-    $twig->addFunction('d', new Twig_SimpleFunction('d', [$this, 'fn_d']));
+    $twig->addFunction(new Timber\Twig_Function('d', [$this, 'fn_d']));
 
     // Call kint debugger
     // Usage: {{ post|d }}
-    $twig->addFilter('d', new Twig_SimpleFilter('d', [$this, 'fn_d']));
+    $twig->addFilter(new Twig_SimpleFilter('d', [$this, 'fn_d']));
 
     // Return a WPML translated object permalink.
     // Usage: {{ wpml_url('contact', 'page') }}
-    $twig->addFunction('wpml_url', new Twig_SimpleFunction('wpml_url', [$this, 'fn_wpml_url']));
+    $twig->addFunction(new Timber\Twig_Function('wpml_url', [$this, 'fn_wpml_url']));
 
     return $twig;
   }
@@ -106,36 +105,32 @@ class TwigExtensions extends \TimberExtended {
   public function add_functional($twig) {
     // Filter a list of objects or arrays.
     // Usage: {{ posts|filter('post_type', 'product') }}
-    $twig->addFilter('filter', new Twig_SimpleFilter('filter', [$this, 'filter_filter']));
+    $twig->addFilter(new Twig_SimpleFilter('filter', [$this, 'filter_filter']));
 
     // Merge that works with objects.
     // Usage: {{ widget|merge(widget.section|default({})) }}
-    $twig->addFilter('obj_merge', new Twig_SimpleFilter('obj_merge', [$this, 'filter_obj_merge']));
+    $twig->addFilter(new Twig_SimpleFilter('obj_merge', [$this, 'filter_obj_merge']));
 
     // Apply a function to all items in a list.
     // Usage: {{ post.organizers|map('intval') }}
-    $twig->addFilter('map', new Twig_SimpleFilter('map', [$this, 'filter_map']));
+    $twig->addFilter(new Twig_SimpleFilter('map', [$this, 'filter_map']));
 
-    // Pluck a property from a list of objects or arrays.
-    // Usage: {{ posts|pluck('post_title') }}
-    $twig->addFilter('pluck', new Twig_SimpleFilter('pluck', [$this, 'filter_pluck']));
-
-    // Pluck a property from a list of objects or arrays.
+    // Get the values from a list.
     // Usage: {{ block_grid|values|join(' ') }}
-    $twig->addFilter('values', new Twig_SimpleFilter('values', [$this, 'filter_values']));
+    $twig->addFilter(new Twig_SimpleFilter('values', [$this, 'filter_values']));
 
-    // Pluck a property from a list of objects or arrays.
+    // Get the keys from a list.
     // Usage: {{ block_grid|keys|join(' ') }}
-    $twig->addFilter('keys', new Twig_SimpleFilter('keys', [$this, 'filter_keys']));
+    $twig->addFilter(new Twig_SimpleFilter('keys', [$this, 'filter_keys']));
 
     // Group a set of posts by a term.
     // @todo inefficient.
     // Usage: {{ posts|group_by_term('category') }}
-    $twig->addFilter('group_by_term', new Twig_SimpleFilter('group_by_term', [$this, 'filter_group_by_term']));
+    $twig->addFilter(new Twig_SimpleFilter('group_by_term', [$this, 'filter_group_by_term']));
 
     // Value filters.
-    $twig->addFilter('bool', new Twig_SimpleFilter('bool', 'boolval'));
-    $twig->addFilter('int', new Twig_SimpleFilter('int', 'intval'));
+    $twig->addFilter(new Twig_SimpleFilter('bool', 'boolval'));
+    $twig->addFilter(new Twig_SimpleFilter('int', 'intval'));
     return $twig;
   }
 
@@ -291,19 +286,6 @@ class TwigExtensions extends \TimberExtended {
     });
 
     return $groups;
-  }
-
-  public function filter_pluck($array, $key) {
-    $return = array();
-    foreach ($array as $item) {
-      if (is_object($item) && isset($item->$key)) {
-        $return[] = $item->$key;
-      }
-      elseif (is_array($item) && isset($item[$key])) {
-        $return[] = $item[$key];
-      }
-    }
-    return $return;
   }
 
   public function filter_keys($array) {
