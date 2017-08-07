@@ -80,6 +80,9 @@ class TwigExtensions extends \TimberExtended {
         return pll_e($string);
     }));
 
+    // Get the absolute URL of the current page.
+    $twig->addFunction(new Timber\Twig_Function('current_url', [$this, 'fn_current_url']));
+
     return $twig;
   }
 
@@ -210,6 +213,11 @@ class TwigExtensions extends \TimberExtended {
 
   public function fn_post($pid) {
     return Timber\PostGetter::get_post($pid);
+  }
+
+  public function fn_current_url() {
+    global $wp;
+    return home_url(add_query_arg([], $wp->request));
   }
 
   public function filter_has_term($array, $term, $category = '') {
