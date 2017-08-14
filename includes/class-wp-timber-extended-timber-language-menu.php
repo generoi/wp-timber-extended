@@ -42,23 +42,15 @@ class LanguageMenu extends Menu {
     }
     foreach ($languages as $langcode => &$language) {
       $language = (object) $language;
-
       $language->classes = array();
-      $language->class = '';
-      $language->link_classes = array();
-      $language->link_class = '';
+      $language->current = $language->active;
+      $language->object_id = null;
+      $language = new MenuItem($language);
 
-      $language->classes[] = $this->classPrefix . '__item';
-      $language->class .= $this->classPrefix . '__item';
-      $language->link_classes[] = $this->classPrefix . '__link';
-      $language->link_class .= $this->classPrefix . '__link';
+      $language->classes = $language->link_classes = array();
+      $language->class = $language->link_class = '';
 
-      if ($language->active) {
-        $language->classes[] = 'active';
-        $language->class .= ' active';
-        $language->classes[] = $this->classPrefix . '__item--active';
-        $language->class .= ' ' . $this->classPrefix . '__item--active';
-      }
+      self::add_item_classes($language, $this->classPrefix);
 
       if (function_exists('PLL')) {
         $lang = PLL()->model->get_language($langcode);
