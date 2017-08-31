@@ -15,53 +15,58 @@ namespace TimberExtended;
  *   </li>
  * {% endfor %}
  */
-class LanguageMenu extends Menu {
+class LanguageMenu extends Menu
+{
 
-  public $options = [
+    public $options = [
     'skip_missing' => 0,
     'orderby' => 'code',
     'order' => 'desc',
-  ];
+    ];
 
-  public function __construct($slug = 0) {
-    $this->slug = $slug;
-    $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $this->slug);
-    $this->add_class($this->classPrefix);
-    $this->init($this->slug);
-  }
-
-  public function setOptions($options) {
-    $this->options = $options;
-    $this->init($this->slug);
-  }
-
-  protected function init($menu_id) {
-    $languages = apply_filters('wpml_active_languages', null, $this->options);
-    if (empty($languages)) {
-      $languages = [];
+    public function __construct($slug = 0)
+    {
+        $this->slug = $slug;
+        $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $this->slug);
+        $this->add_class($this->classPrefix);
+        $this->init($this->slug);
     }
-    foreach ($languages as $langcode => &$language) {
-      $language = (object) $language;
-      $language->classes = array();
-      $language->current = $language->active;
-      $language->object_id = null;
-      $language = new MenuItem($language);
 
-      $language->classes = $language->link_classes = array();
-      $language->class = $language->link_class = '';
-
-      self::add_item_classes($language, $this->classPrefix);
-
-      if (function_exists('PLL')) {
-        $lang = PLL()->model->get_language($langcode);
-        $language->disabled = isset($lang->active) ? !$lang->active : false;
-        $language->enabled = !$language->disabled;
-      }
+    public function setOptions($options)
+    {
+        $this->options = $options;
+        $this->init($this->slug);
     }
-    $this->items = $languages;
-  }
 
-  public function get_items() {
-    return $this->items;
-  }
+    protected function init($menu_id)
+    {
+        $languages = apply_filters('wpml_active_languages', null, $this->options);
+        if (empty($languages)) {
+            $languages = [];
+        }
+        foreach ($languages as $langcode => &$language) {
+            $language = (object) $language;
+            $language->classes = array();
+            $language->current = $language->active;
+            $language->object_id = null;
+            $language = new MenuItem($language);
+
+            $language->classes = $language->link_classes = array();
+            $language->class = $language->link_class = '';
+
+            self::add_item_classes($language, $this->classPrefix);
+
+            if (function_exists('PLL')) {
+                $lang = PLL()->model->get_language($langcode);
+                $language->disabled = isset($lang->active) ? !$lang->active : false;
+                $language->enabled = !$language->disabled;
+            }
+        }
+        $this->items = $languages;
+    }
+
+    public function get_items()
+    {
+        return $this->items;
+    }
 }
