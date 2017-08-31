@@ -17,11 +17,10 @@ namespace TimberExtended;
  */
 class LanguageMenu extends Menu
 {
-
     public $options = [
-    'skip_missing' => 0,
-    'orderby' => 'code',
-    'order' => 'desc',
+        'skip_missing' => 0,
+        'orderby' => 'code',
+        'order' => 'desc',
     ];
 
     public function __construct($slug = 0)
@@ -46,12 +45,12 @@ class LanguageMenu extends Menu
         }
         foreach ($languages as $langcode => &$language) {
             $language = (object) $language;
-            $language->classes = array();
+            $language->classes = [];
             $language->current = $language->active;
             $language->object_id = null;
-            $language = new MenuItem($language);
+            $language = new $this->MenuItemClass($language);
 
-            $language->classes = $language->link_classes = array();
+            $language->classes = $language->link_classes = [];
             $language->class = $language->link_class = '';
 
             self::add_item_classes($language, $this->classPrefix);

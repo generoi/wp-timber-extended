@@ -3,6 +3,7 @@
 namespace TimberExtended;
 
 use Timber;
+use TimberExtended;
 
 /**
  * An extended Timber\Menu which adds BEM classes to menu items.
@@ -18,9 +19,7 @@ use Timber;
  */
 class Menu extends Timber\Menu
 {
-    public $MenuItemClass = 'TimberExtended\MenuItem';
-
-    public $classes = array();
+    public $classes = [];
     public $class = '';
 
   // Eg. .nav-primary-menu
@@ -28,6 +27,9 @@ class Menu extends Timber\Menu
 
     public function __construct($slug = 0)
     {
+        $this->PostClass = TimberExtended::get_object_class('post', null, $this);
+        $this->MenuItemClass = TimberExtended::get_object_class('menuitem', null, $this);
+
         parent::__construct($slug);
 
         $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $slug);

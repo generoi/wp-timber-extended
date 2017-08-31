@@ -2,7 +2,8 @@
 
 namespace TimberExtended;
 
-use \Timber;
+use Timber;
+use TimberExtended;
 
 /**
  * An extended Timber\MenuItem which can store both item classes and link
@@ -17,9 +18,16 @@ use \Timber;
  */
 class MenuItem extends Timber\MenuItem
 {
-    public $link_classes = array();
+    public $link_classes = [];
     public $link_class = '';
     public $classPrefix = '';
+
+    public function __construct($data)
+    {
+        $this->PostClass = TimberExtended::get_object_class('post', null, $this);
+
+        parent::__construct($data);
+    }
 
     public function add_link_class($class_name)
     {

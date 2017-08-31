@@ -28,6 +28,12 @@ To use this feature, clarify that your theme supports it with
 add_theme_support('timber-extended-templates', [
   // Use double dashes as the template variation separator.
   'bem_templates',
+  // Use timber to render widgets.
+  'widget',
+  // Use timber to WooCommerce templates.
+  'woocommerce',
+  // Use timber to Tailor templates.
+  'tailor',
 ]);
 ```
 
@@ -60,7 +66,11 @@ add_theme_support('timber-extended-twig-extensions', [
 
 ## Bundled Timber classes
 
-- `TimberExtended\Widget`: Widget object for for ACFW or regular core widgets.
+- `TimberExtended\Post`: Extended Timber\Post
+- `TimberExtended\Term`: Extended Timber\Term
+- `TimberExtended\Image`: Extended Timber\Image
+- `TimberExtended\User`: Extended Timber\User
+- `TimberExtended\Widget`: Widget object for ACFW or regular core widgets.
 - `TimberExtended\Menu`: Extended Timber\Menu adding BEM classes to menu items.
 - `TimberExtended\MenuItem`: Extended Timber\MenuItem adding BEM classes to menu item as well as their links.
 - `TimberExtended\LanugageMenu`: TimberExtended\Menu-like dummy class which contains the site languages as it's items (WPML/PLL support).
@@ -68,14 +78,6 @@ add_theme_support('timber-extended-twig-extensions', [
 ## Filters API
 
 ```php
-// Suggest class names to init objects.
-add_filter('timber_extended/class_name', function ($class_name, $types, $object) {
-  if (in_array('widget', $types)) {
-    $class_name = __NAMESPACE__ . '\\Widget';
-  }
-  return $class_name;
-}, 10, 3);
-
 // Modify the template suggestions
 add_filter('timber_extended/templates/suggestions', function ($templates) {
   return $templates;
@@ -84,6 +86,20 @@ add_filter('timber_extended/templates/suggestions', function ($templates) {
 // Disable Twig suggestions.
 add_filter('timber_extended/templates/twig', '__return_false');
 
-// Disable Timber Widgets.
-add_filter('timber-extended/timber-widget', '__return_false');
+// Set custom timber subclasses.
+add_filter('timber_extended/class', function ($class_name, $type, $object = null) {
+  switch ($type) {
+    case 'post': return __NAMESPACE__ . '\\Controller\\Post';
+    case 'term': return __NAMESPACE__ . '\\Controller\\Term';
+    case 'user': return __NAMESPACE__ . '\\Controller\\User';
+    case 'image': return __NAMESPACE__ . '\\Controller\\Image';
+    case 'widget': return __NAMESPACE__ . '\\Controller\\Widget';
+  }
+  return $class_name;
+}, 10, 3);
+
+// Set custom Timber subclasses.
+add_filter('timber_extended/{user,widget,image,post,term,menu,menuitem}/class', function ($class_name, $object = null) {
+  return __NAMESPACE__ . '\\User';
+});
 ```

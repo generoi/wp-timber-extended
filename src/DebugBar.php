@@ -1,14 +1,13 @@
 <?php
 
-class Debug_Bar_TimberExtended extends \Debug_Bar_Panel
+class TimberExtended_DebugBar extends Debug_Bar_Panel
 {
-    private $template_suggestions;
+    protected $template_suggestions = [];
 
     public function init()
     {
-        $this->template_suggestions = array();
         $this->title('TimberExtended');
-        add_filter('timber_extended/templates/suggestions', array($this, 'add_template_suggestions'), 100, 1);
+        add_filter('timber_extended/templates/suggestions', [$this, 'add_template_suggestions'], 100, 1);
     }
 
     public function add_template_suggestions($templates)
@@ -24,7 +23,7 @@ class Debug_Bar_TimberExtended extends \Debug_Bar_Panel
 
     public function render()
     {
-        $page_types = \TimberExtended::get_page_types();
+        $page_types = TimberExtended::get_page_types();
 
         echo '<h5>' . sprintf(__('These were the templates search for detected page types: <em>%s</em>'), implode(', ', $page_types)) . '</h5>';
 

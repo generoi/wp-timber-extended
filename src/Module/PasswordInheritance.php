@@ -1,15 +1,22 @@
 <?php
 
-namespace TimberExtended;
+namespace TimberExtended\Module;
 
-class PasswordInheritance extends \TimberExtended
+class PasswordInheritance extends Module
 {
-
-    public function init()
+    /** @inheritdoc */
+    public function __construct()
     {
+        parent::__construct();
+
         add_filter('timber/context', [$this, 'add_timber_context'], 1, 1);
     }
 
+    /**
+     * Attach variables to timber contexts.
+     *
+     * @param array $context
+     */
     public function add_timber_context($context)
     {
         if (!empty($context['password_required']) || !is_page()) {
@@ -21,7 +28,13 @@ class PasswordInheritance extends \TimberExtended
         return $context;
     }
 
-    public static function post_ancestor_password_required($pid)
+    /**
+     * Return if one of the post's ancestors requires a password
+     *
+     * @param int $pid
+     * @return bool
+     */
+    public static function post_ancestor_password_required($pid = null)
     {
         $post = get_post($pid);
         if ($post->post_parent) {
@@ -34,5 +47,3 @@ class PasswordInheritance extends \TimberExtended
         return false;
     }
 }
-
-PasswordInheritance::get_instance()->init();

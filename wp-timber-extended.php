@@ -17,64 +17,44 @@ if (!defined('ABSPATH')) {
 
 class TimberExtended
 {
-    private static $instances = array();
-
-    private $features = array();
+    private static $instance = null;
+    public $version = '1.0.0';
 
     public static function get_instance()
     {
-        $cls = get_called_class();
-        if (!isset(self::$instances[$cls])) {
-            self::$instances[$cls] = new static;
+        if (null === self::$instance) {
+            self::$instance = new self();
         }
-        return self::$instances[$cls];
+        return self::$instance;
     }
 
     public function init()
     {
-        $includes_dir = __DIR__ . '/includes';
-        if (apply_filters('timber-extended/timber-widget', true)) {
-            require_once $includes_dir . '/class-wp-timber-extended-timber-widget.php';
-        }
-        if (apply_filters('timber-extended/timber-menu', true)) {
-            require_once $includes_dir . '/class-wp-timber-extended-timber-menu.php';
-            require_once $includes_dir . '/class-wp-timber-extended-timber-menu-item.php';
-        }
-        if (apply_filters('timber-extended/timber-language-menu', true)) {
-            require_once $includes_dir . '/class-wp-timber-extended-timber-language-menu.php';
-        }
-
-        add_action('after_setup_theme', [$this, 'loadModules'], 99);
-        add_action('debug_bar_panels', [$this, 'addDebugBar']);
+        register_activation_hook(__FILE__, [__CLASS__, 'activate']);
+        add_action('after_setup_theme', ['TimberExtended\\Module\\Module', 'load_modules'], 99);
+        add_action('debug_bar_panels', [$this, 'add_debug_bar']);
     }
 
-    public function loadModules()
+    /**
+     * Add a custom debug bar section showing template suggestions.
+     *
+     * @param array $panels
+     * @return array
+     */
+    public function add_debug_bar($panels)
     {
-        foreach (glob(__DIR__ . '/modules/*.php') as $file) {
-            $feature = 'timber-extended-' . basename($file, '.php');
-            if (get_theme_support($feature)) {
-                require_once $file;
-            }
-        }
-    }
-
-    public function addDebugBar($panels)
-    {
-        require_once __DIR__ . '/includes/class-wp-timber-extended-debug-bar.php';
-        $panels[] = new Debug_Bar_TimberExtended();
+        // Cannot use namespaces and therefore no autoloading.
+        require_once __DIR__ . '/src/DebugBar.php';
+        $panels[] = new TimberExtended_DebugBar();
         return $panels;
     }
 
-    public function hasThemeFeature($feature)
-    {
-        return in_array($feature, $this->features);
-    }
-
-    public function setThemeFeatures($features)
-    {
-        $this->features = $features;
-    }
-
+    /**
+     * Return if current page matches the type.
+     *
+     * @param string $type Type as defined in get_page_types().
+     * @return bool
+     */
     public static function is_page_type($type)
     {
         if (is_string($type)) {
@@ -83,6 +63,11 @@ class TimberExtended
         return !empty(array_intersect($type, self::get_page_types()));
     }
 
+    /**
+     * Get matching page types of the current page.
+     *
+     * @return array
+     */
     public static function get_page_types()
     {
         $types = [];
@@ -137,6 +122,88 @@ class TimberExtended
 
         return apply_filters('timber_extended/templates/page_types', $types);
     }
+
+    /**
+     * Get the Timber class to use when initializing an object.
+     *
+     * @param string $type Object type (post, term, user, image, widget)
+     * @param string $class_name The default class name
+     * @param object $object The associated object if it exists.
+     * @return string
+     */
+    public static function get_object_class($type, $class_name = null, $object = null)
+    {
+        if (!isset($class_name)) {
+            switch ($type) {
+                case 'image':
+                    $class_name = 'TimberExtended\\Image';
+                    break;
+                case 'post':
+                    $class_name = 'TimberExtended\\Post';
+                    break;
+                case 'widget':
+                    $class_name = 'TimberExtended\\Widget';
+                    break;
+                case 'term':
+                    $class_name = 'TimberExtended\\Term';
+                    break;
+                case 'user':
+                    $class_name = 'TimberExtended\\User';
+                    break;
+                case 'widget':
+                    $class_name = 'TimberExtended\\Widget';
+                    break;
+                case 'menuitem':
+                    $class_name = 'TimberExtended\\MenuItem';
+                    break;
+                case 'menu':
+                    $class_name = 'TimberExtended\\Menu';
+                    break;
+            }
+        }
+        $class_name = apply_filters("timber_extended/class", $class_name, $type, $object);
+        $class_name = apply_filters("timber_extended/$type/class", $class_name, $object);
+
+        if ($type === 'post') {
+            if (!isset($object)) {
+                $object = get_post();
+            }
+            if (isset($object->post_type)) {
+                // Unfold PostGetter::get_post_class() to avoid recursion.
+                $post_class = apply_filters('Timber\PostClassMap', $class_name);
+                if (is_string($post_class)) {
+                    $class_name = $post_class;
+                } elseif (is_array($post_class) && isset($post_class[$object->post_type])) {
+                    $class_name = $post_class[$object->post_type];
+                }
+            }
+        }
+
+        return $class_name;
+    }
+
+    /**
+     * Activate plugin.
+     */
+    public static function activate()
+    {
+        foreach ([
+            'timber-library/timber.php' => 'Timber Library',
+            // 'wp-timber-extended/wp-timber-extended.php' => 'WP Timber Extended',
+        ] as $plugin => $name) {
+            if (!is_plugin_active($plugin) && current_user_can('activate_plugins')) {
+                wp_die(sprintf(
+                    __('Sorry, but this plugin requires the %s plugin to be installed and active. <br><a href="%s">&laquo; Return to Plugins</a>', 'wp-hero'),
+                    $name,
+                    admin_url('plugins.php')
+                ));
+            }
+        }
+    }
+}
+
+if (file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
+    require_once $composer;
 }
 
 TimberExtended::get_instance()->init();
