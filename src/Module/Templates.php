@@ -90,7 +90,7 @@ class Templates extends Module
             }
         } elseif (TimberExtended::is_page_type(['tax', 'category', 'tag'])) {
             // Archive pages with a term object.
-            $term = get_term();
+            $term = get_queried_object();
             $term_class = TimberExtended::get_object_class('term', null, $term);
             $context['term'] = new $term_class($term);
 
