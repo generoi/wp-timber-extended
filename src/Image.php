@@ -61,7 +61,7 @@ class Image extends Timber\Image
             // Fixed size
             $this->r_width($width);
             $this->r_height($height);
-        } else if (isset($width) && !isset($height)) {
+        } elseif (isset($width) && !isset($height)) {
             // Fluid height.
             $this->r_width($width);
             $this->r_height($this->height * ($this->r_width / $this->width));
@@ -156,7 +156,8 @@ class Image extends Timber\Image
      *
      * @param string $value
      */
-    public function src_sizes($value = null) {
+    public function src_sizes($value = null)
+    {
         $this->src_sizes = $value;
     }
 
@@ -165,7 +166,8 @@ class Image extends Timber\Image
      *
      * @param int $value
      */
-    public function r_width($value = null) {
+    public function r_width($value = null)
+    {
         $this->r_width = $value;
     }
 
@@ -174,7 +176,8 @@ class Image extends Timber\Image
      *
      * @param int $value
      */
-    public function r_height($value = null) {
+    public function r_height($value = null)
+    {
         $this->r_height = $value;
     }
 
@@ -183,7 +186,8 @@ class Image extends Timber\Image
      *
      * @param string $value
      */
-    public function crop($value = null) {
+    public function crop($value = null)
+    {
         $this->crop = $value;
     }
 
@@ -206,7 +210,8 @@ class Image extends Timber\Image
      * @param int $height
      * @return Image
      */
-    public function resize($width = null, $height = null) {
+    public function resize($width = null, $height = null)
+    {
         $width = isset($width) ? $width : $this->r_width;
         $height = isset($height) ? $height : $this->r_height;
 

@@ -58,7 +58,8 @@ class Module
      * @param string $class_name
      * @return string
      */
-    protected static function get_feature_name($class_name) {
+    protected static function get_feature_name($class_name)
+    {
         $class_name = explode('\\', $class_name);
         $class_name = array_pop($class_name);
         $feature_name = strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $class_name));

@@ -662,7 +662,8 @@ class TwigExtensions extends Module
      * @param string $class_name Class to create objects with
      * @return mixed
      */
-    protected function object_create($type, $object, $class_name) {
+    protected function object_create($type, $object, $class_name)
+    {
         $object = new $class_name($object);
         // Verify that the class is correct
         $object_class_name = TimberExtended::get_object_class($type, null, $object);

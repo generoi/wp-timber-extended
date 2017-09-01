@@ -44,7 +44,6 @@ class TimberBasics extends Module
         }
         if ($logo_id = get_theme_mod('custom_logo')) {
             $context['site']->logo = new $image_class($logo_id);
-
         }
         // Timber doesn't support bedrock-like directory structures.
         $context['site']->siteurl = get_site_url();
