@@ -129,7 +129,7 @@ class Widget extends Timber\Core implements Timber\CoreInterface
         }
 
         // Add Widget Options classes using widget-options-extende.
-        if (!empty($this->extended_widget_opts) && class_exists('WidgetOptionsExtended')) {
+        if (!empty($this->extended_widget_opts)) {
             $this->widget_options($this->extended_widget_opts);
         }
     }
@@ -141,9 +141,11 @@ class Widget extends Timber\Core implements Timber\CoreInterface
      */
     protected function widget_options($options)
     {
-        $extra_classes = WidgetOptionsExtended::get_widget_classes($options);
-        foreach ($extra_classes as $class) {
-            $this->add_class($class);
+        if (class_exists('WidgetOptionsExtended')) {
+            $extra_classes = WidgetOptionsExtended::get_widget_classes($options);
+            foreach ($extra_classes as $class) {
+                $this->add_class($class);
+            }
         }
 
         if (!empty($options['class']['title'])) {

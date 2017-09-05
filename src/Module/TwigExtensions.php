@@ -53,6 +53,7 @@ class TwigExtensions extends Module
         $twig->addFilter(new Twig_SimpleFilter('wptrim', [$this, 'filter_wptrim']));
         $twig->addFunction(new Timber\Twig_Function('current_url', [$this, 'fn_current_url']));
         $twig->addFilter(new Twig_SimpleFilter('has_term', [$this, 'filter_has_term']));
+        $twig->addFunction(new Timber\Twig_Function('placeholder', [$this, 'fn_placeholder']));
 
         return $twig;
     }
@@ -323,6 +324,34 @@ class TwigExtensions extends Module
         return array_filter($array, function ($item) use ($term, $taxonomy) {
             return has_term($term, $taxonomy, $item);
         });
+    }
+
+    /**
+     * Get a placeholder string or image.
+     *
+     * @param string|int $width If a string is passed, lorem ipsum will be returned.
+     * @param int $height
+     * @return string
+     *
+     * @example {{placeholder()}}
+     * @example {{placeholder(400, 300)}}
+     * @example {{placeholder('lorem')}}
+     */
+    public function fn_placeholder($width = 400, $height = null) {
+        if (is_string($width)) {
+            static $content;
+            if (!isset($content)) {
+                $content = Timber\Helper::transient('loremipsum', function () {
+                    return file_get_contents('https://loripsum.net/api');
+                }, YEAR_IN_SECONDS);
+            }
+            return $content;
+        }
+
+        if (!isset($height)) {
+            $height = round($width / 1.5);
+        }
+        return "<img width=\"$width\" height=\"$height\" src=\"https://placehold.it/{$width}x{$height}\"";
     }
 
     // Functional

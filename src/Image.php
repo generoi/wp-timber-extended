@@ -9,7 +9,7 @@ class Image extends Timber\Image
     /** @var bool $tojpg Force JPG output */
     public $tojpg = false;
     /** @var string $wrapper_class CSS class to wrap the image in */
-    public $wrapper_class = 'ratio-container';
+    public $wrapper_class = 'responsive-embed';
 
     /** @var string $size Thumbnail size name */
     public $size;

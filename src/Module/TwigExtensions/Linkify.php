@@ -3,7 +3,7 @@
 namespace TimberExtended\Module\TwigExtensions;
 
 use Twig_Extension;
-use Twig_Filter_Method;
+use Twig_SimpleFilter;
 
 /**
  * Provide a `linkify` filter which transforms URL addresses to HTML links.
@@ -15,7 +15,7 @@ class Linkify extends Twig_Extension
     public function getFilters()
     {
         return [
-            'linkify' => new Twig_Filter_Method($this, 'linkify', [
+            new Twig_SimpleFilter('linkify', [$this, 'linkify'], [
                 'is_safe' => ['html'],
             ]),
         ];

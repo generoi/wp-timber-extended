@@ -29,4 +29,14 @@ class Term extends Timber\Term
             return $this->thumbnail;
         }
     }
+
+    /**
+     * Get the description of the term.
+     *
+     * @return string
+     */
+    public function content()
+    {
+        return apply_filters('the_content', $this->description);
+    }
 }

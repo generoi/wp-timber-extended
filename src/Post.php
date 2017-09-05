@@ -140,13 +140,7 @@ class Post extends Timber\Post
         global $wpdb;
         $terms = $this->terms();
         if (empty($terms)) {
-            return (new Timber\PostQuery([
-                'post_type' => $this->post_type,
-                'post__not_in' => [$this->ID],
-                'posts_per_page' => $posts_per_page,
-                'ignore_sticky_posts' => true,
-                'orderby' => 'rand',
-            ]))->get_posts();
+            return [];
         }
 
         $tids = implode(',', array_column($terms, 'id'));

@@ -3,6 +3,7 @@
 namespace TimberExtended\Module\Templates;
 
 use Timber;
+use TimberExtended;
 
 class Widget
 {
