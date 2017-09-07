@@ -131,7 +131,7 @@ class TwigExtensions extends Module
             }
         }
 
-        return $this->object_getter('post', $pid, $post_class);
+        return TimberExtended::object_getter('post', $pid, $post_class);
     }
 
     /**
@@ -143,7 +143,7 @@ class TwigExtensions extends Module
      */
     public function fn_term($tid, $term_class = null)
     {
-        return $this->object_getter('term', $tid, $term_class);
+        return TimberExtended::object_getter('term', $tid, $term_class);
     }
 
     /**
@@ -155,7 +155,7 @@ class TwigExtensions extends Module
      */
     public function fn_image($iid, $image_class = null)
     {
-        return $this->object_getter('image', $iid, $image_class);
+        return TimberExtended::object_getter('image', $iid, $image_class);
     }
 
     /**
@@ -167,7 +167,7 @@ class TwigExtensions extends Module
      */
     public function fn_user($uid, $user_class = null)
     {
-        return $this->object_getter('user', $uid, $user_class);
+        return TimberExtended::object_getter('user', $uid, $user_class);
     }
 
     /**
@@ -659,7 +659,7 @@ class TwigExtensions extends Module
             if (Timber\Helper::is_array_assoc($object)) {
                 foreach ($object as $key => &$obj) {
                     if ($is_guess_class_name) {
-                        $obj = $this->object_create($type, $obj, $class_name);
+                        $obj = TimberExtended::object_create($type, $obj, $class_name);
                     } else {
                         $obj = new $class_name($obj);
                     }
@@ -667,7 +667,7 @@ class TwigExtensions extends Module
             } else {
                 foreach ($object as &$obj) {
                     if ($is_guess_class_name) {
-                        $obj = $this->object_create($type, $obj, $class_name);
+                        $obj = TimberExtended::object_create($type, $obj, $class_name);
                     } else {
                         $obj = new $class_name($obj);
                     }
@@ -676,29 +676,10 @@ class TwigExtensions extends Module
             return $object;
         }
         if ($is_guess_class_name) {
-            $obj = $this->object_create($type, $object, $class_name);
+            $obj = TimberExtended::object_create($type, $object, $class_name);
         } else {
             $obj = new $class_name($object);
         }
         return $obj;
-    }
-
-    /**
-     * Create a Timber object using the correct Timber class.
-     *
-     * @param string $type Object type (post, term, image, etc)
-     * @param mixed $object Object or list of objects
-     * @param string $class_name Class to create objects with
-     * @return mixed
-     */
-    protected function object_create($type, $object, $class_name)
-    {
-        $object = new $class_name($object);
-        // Verify that the class is correct
-        $object_class_name = TimberExtended::get_object_class($type, null, $object);
-        if ($class_name !== $object_class_name) {
-            $object = new $object_class_name($object);
-        }
-        return $object;
     }
 }

@@ -124,6 +124,72 @@ class TimberExtended
     }
 
     /**
+     * Helper for object getter functions.
+     *
+     * @internal
+     * @param string $type Object type (post, term, image, etc)
+     * @param mixed $object Object or list of objects
+     * @param string $class_name Class to create objects with
+     * @return mixed
+     */
+    public static function object_getter($type, $object, $class_name = null)
+    {
+        // If no class name is specified, figure it out.
+        $is_guess_class_name = !isset($class_name);
+        if ($is_guess_class_name) {
+            $class_name = TimberExtended::get_object_class($type, null, $object);
+        }
+
+        if (is_array($object)) {
+            if (Timber\Helper::is_array_assoc($object)) {
+                foreach ($object as $key => &$obj) {
+                    if ($is_guess_class_name) {
+                        $obj = self::object_create($type, $obj, $class_name);
+                    } else {
+                        $obj = new $class_name($obj);
+                    }
+                }
+            } else {
+                foreach ($object as &$obj) {
+                    if ($is_guess_class_name) {
+                        $obj = self::object_create($type, $obj, $class_name);
+                    } else {
+                        $obj = new $class_name($obj);
+                    }
+                }
+            }
+            return $object;
+        }
+        if ($is_guess_class_name) {
+            $obj = self::object_create($type, $object, $class_name);
+        } else {
+            $obj = new $class_name($object);
+        }
+        return $obj;
+    }
+
+    /**
+     * Create a Timber object using the correct Timber class.
+     *
+     * @param string $type Object type (post, term, image, etc)
+     * @param mixed $object Object
+     * @param string $class_name Class to create objects with
+     * @return mixed
+     */
+    protected static function object_create($type, $object, $class_name)
+    {
+        if (!is_object($object) || get_class($object) !== $class_name) {
+            $object = new $class_name($object);
+        }
+        // Verify that the class is correct
+        $object_class_name = self::get_object_class($type, null, $object);
+        if ($class_name !== $object_class_name) {
+            $object = new $object_class_name($object);
+        }
+        return $object;
+    }
+
+    /**
      * Get the Timber class to use when initializing an object.
      *
      * @param string $type Object type (post, term, user, image, widget)

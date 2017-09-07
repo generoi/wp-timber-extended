@@ -4,6 +4,7 @@ namespace TimberExtended;
 
 use Timber;
 use TimberExtended;
+use WP_Post;
 
 class Post extends Timber\Post
 {
@@ -77,6 +78,25 @@ class Post extends Timber\Post
         $ancestors = get_post_ancestors($this->ID);
         $this->ancestors = Timber\PostGetter::get_posts($ancestors);
         return $this->ancestors;
+    }
+
+    /** @inhertidoc */
+    public function convert($data, $class = '\Timber\Post') {
+        if ($data instanceof WP_Post) {
+            $data = TimberExtended::object_getter('post', $data);
+        } else if (is_array($data)) {
+            $func = __FUNCTION__;
+            foreach ($data as &$ele) {
+                if (gettype($ele) === 'array') {
+                    $ele = $this->$func($ele, $class);
+                } else {
+                    if ($ele instanceof WP_Post) {
+                        $ele = TimberExtended::object_getter('post', $ele);
+                    }
+                }
+            }
+        }
+        return $data;
     }
 
     /**
