@@ -24,7 +24,9 @@ class MenuItem extends Timber\MenuItem
 
     public function __construct($data)
     {
-        $this->PostClass = TimberExtended::get_object_class('post', null, $this);
+        if ($this->PostClass === 'Timber\Post') {
+            $this->PostClass = TimberExtended::get_object_class('post', null, $data);
+        }
 
         parent::__construct($data);
     }

@@ -24,10 +24,18 @@ class Post extends Timber\Post
             $this->cache_duration = false;
         }
 
-        $this->PostClass = TimberExtended::get_object_class('post', null, $this);
-        $this->UserClass = TimberExtended::get_object_class('user', null, $this);
-        $this->TermClass = TimberExtended::get_object_class('term', null, $this);
-        $this->ImageClass = TimberExtended::get_object_class('image', null, $this);
+        if ($this->PostClass === 'Timber\Post') {
+            $this->PostClass = TimberExtended::get_object_class('post', null, $this);
+        }
+        if (!isset($this->UserClass)) {
+            $this->UserClass = TimberExtended::get_object_class('user', null, $this);
+        }
+        if ($this->TermClass === 'Timber\Term') {
+            $this->TermClass = TimberExtended::get_object_class('term', null, $this);
+        }
+        if ($this->ImageClass === 'Timber\Image') {
+            $this->ImageClass = TimberExtended::get_object_class('image', null, $this);
+        }
     }
 
     /** @inheritdoc */

@@ -27,8 +27,12 @@ class Menu extends Timber\Menu
 
     public function __construct($slug = 0)
     {
-        $this->PostClass = TimberExtended::get_object_class('post', null, $this);
-        $this->MenuItemClass = TimberExtended::get_object_class('menuitem', null, $this);
+        if ($this->PostClass === 'Timber\Post') {
+            $this->PostClass = TimberExtended::get_object_class('post', null, $slug);
+        }
+        if ($this->MenuItemClass === 'Timber\MenuItem') {
+            $this->MenuItemClass = TimberExtended::get_object_class('menuitem', null, $slug);
+        }
 
         parent::__construct($slug);
 
