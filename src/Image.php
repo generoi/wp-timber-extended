@@ -191,7 +191,7 @@ class Image extends Timber\Image
         $height = isset($height) ? $height : $this->r_height;
 
         $src = Timber\ImageHelper::resize($this->src(), $width, $height);
-        return new self($src);
+        return new static($src);
     }
 
     /**
@@ -225,7 +225,7 @@ class Image extends Timber\Image
         $height = round($height);
 
         $src = Timber\ImageHelper::resize($this->src(), $width, $height, $crop);
-        return new self($src);
+        return new static($src);
     }
 
     /** @inheritdoc */
