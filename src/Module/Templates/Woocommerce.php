@@ -25,10 +25,19 @@ class Woocommerce
      */
     public static function wc_get_template($located, $template_name, $args, $template_path, $default_path)
     {
-        $twig_template_name = str_replace('.php', '.twig', $template_name);
-        $twig_template = wc_locate_template($twig_template_name);
-        if (file_exists($twig_template)) {
-            $twig_template = str_replace(TEMPLATEPATH, '', $twig_template);
+        $templates = [];
+        foreach (Timber\LocationManager::get_locations_theme_dir() as $dir) {
+            $twig_template_name = str_replace('.php', '.twig', $template_name);
+            $templates[] = trailingslashit($dir) . 'woocommerce/' . $twig_template_name;
+            $templates[] = trailingslashit($dir) . 'woocommerce/' . $template_name;
+            $templates[] = trailingslashit($dir) . $twig_template_name;
+            $templates[] = trailingslashit($dir) . $template_name;
+        }
+        if ($twig_template_path = locate_template($templates)) {
+            if (substr($twig_template_path, -5) !== '.twig') {
+                return $twig_template_path;
+            }
+            $twig_template = str_replace(TEMPLATEPATH, '', $twig_template_path);
             Timber::render($twig_template, $args);
             return locate_template('index.php');
         }
