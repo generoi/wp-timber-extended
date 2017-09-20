@@ -31,45 +31,14 @@ class Image extends Timber\Image
      * @param bool $tojpg Force JPG.
      * @return string
      */
-    public function render($width = 'full', $height = null, $crop = 'default', $tojpg = false)
+    public function render($width = 'full', $height = null, $crop = 'default', $tojpg = null)
     {
         // Require a set of dimensions.
         if (!$this->width || !$this->height) {
             return $this->invalid_tag('no dimensions');
         }
 
-        $this->crop = $crop;
-        if (isset($tojpg)) {
-            $this->tojpg = $tojpg;
-        }
-
-        if (is_string($width)) {
-            // Thumbnail size name was passed.
-            $this->size = $width;
-
-            if ($dimensions = self::get_image_dimensions($width)) {
-                // Known size
-                $this->r_width($dimensions['width']);
-                $this->r_height($dimensions['height']);
-                $this->crop($dimensions['crop']);
-            } else {
-                // Unknown size (eg. full)
-                $this->r_width($this->width);
-                $this->r_height($this->height);
-            }
-        } elseif (isset($width) && isset($height)) {
-            // Fixed size
-            $this->r_width($width);
-            $this->r_height($height);
-        } elseif (isset($width) && !isset($height)) {
-            // Fluid height.
-            $this->r_width($width);
-            $this->r_height($this->height * ($this->r_width / $this->width));
-        } else {
-            // Unknown size
-            $this->r_width($this->width);
-            $this->r_height($this->height);
-        }
+        $this->set_dimensions($width, $height, $crop, $tojpg);
 
         $content = '<div class="' . $this->wrapper_class . '" style="padding-bottom: ' .  ($this->intrinsic_ratio() * 100) . '%;">';
         $content .= $this->tag;
@@ -84,11 +53,13 @@ class Image extends Timber\Image
      * @param string $value If specified, set the HTML for the image tag.
      * @return string
      */
-    public function tag($value = null)
+    public function tag($width = null, $height = null, $crop = 'default', $tojpg = null)
     {
-        if (!empty($value)) {
-            $this->tag = $value;
+        if (is_string($width) && !preg_match('/^[a-Z_\-0-9]$/', $width)) {
+            $this->tag = $width;
             return;
+        } else if (isset($width)) {
+            $this->set_dimensions($width, $height, $crop, $tojpg);
         }
 
         $attributes['alt'] = $this->alt;
@@ -105,7 +76,11 @@ class Image extends Timber\Image
             $top = round($focus['top'], 2);
             $attributes['style'] = "object-position: $left% $top%;";
             $attributes['class'] = 'smartcrop';
+        } else {
+            $attributes['width'] = round($this->r_width);
+            $attributes['height'] = round($this->r_height);
         }
+
         $attributes = $this->get_attribute_string($attributes);
 
         return "<img $attributes>";
@@ -382,5 +357,42 @@ class Image extends Timber\Image
             return $sizes[$size];
         }
         return null;
+    }
+
+    protected function set_dimensions($width = null, $height = null, $crop = 'default', $tojpg = null)
+    {
+        $this->crop = $crop;
+
+        if (isset($tojpg)) {
+            $this->tojpg = $tojpg;
+        }
+
+        if (is_string($width)) {
+            // Thumbnail size name was passed.
+            $this->size = $width;
+
+            if ($dimensions = self::get_image_dimensions($width)) {
+                // Known size
+                $this->r_width($dimensions['width']);
+                $this->r_height($dimensions['height']);
+                $this->crop($dimensions['crop']);
+            } else {
+                // Unknown size (eg. full)
+                $this->r_width($this->width);
+                $this->r_height($this->height);
+            }
+        } elseif (isset($width) && isset($height)) {
+            // Fixed size
+            $this->r_width($width);
+            $this->r_height($height);
+        } elseif (isset($width) && !isset($height)) {
+            // Fluid height.
+            $this->r_width($width);
+            $this->r_height($this->height * ($this->r_width / $this->width));
+        } else {
+            // Unknown size
+            $this->r_width($this->width);
+            $this->r_height($this->height);
+        }
     }
 }
