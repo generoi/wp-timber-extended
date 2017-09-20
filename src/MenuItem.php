@@ -48,4 +48,9 @@ class MenuItem extends Timber\MenuItem
         $children = parent::get_children();
         return Menu::recurse_item_classes($children, $this->classPrefix);
     }
+
+    public function is_active()
+    {
+        return Menu::is_active($this);
+    }
 }
