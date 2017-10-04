@@ -78,8 +78,8 @@ class Image extends Timber\Image
             $attributes['style'] = "object-position: $left% $top%;";
             $attributes['class'] = 'smartcrop';
         } else {
-            $attributes['width'] = round($this->r_width);
-            $attributes['height'] = round($this->r_height);
+            $attributes['width'] = $this->r_width;
+            $attributes['height'] = $this->r_height;
         }
 
         $attributes = $this->get_attribute_string($attributes);
@@ -117,7 +117,7 @@ class Image extends Timber\Image
 
         // If it's a larger image, provide a version in half it's size.
         if ($this->r_width > 400) {
-            $half = $this->resize($this->r_width/2, $this->r_height/2);
+            $half = $this->resize(round($this->r_width/2), round($this->r_height/2));
 
             if ($half->src != $normal->src) {
                 $sources[] = $half->src . ' ' . $half->width .'w';
@@ -397,7 +397,7 @@ class Image extends Timber\Image
         } elseif (isset($width) && !isset($height)) {
             // Fluid height.
             $this->r_width($width);
-            $this->r_height($this->height * ($this->r_width / $this->width));
+            $this->r_height(round($this->height * ($this->r_width / $this->width)));
         } else {
             // Unknown size
             $this->r_width($this->width);
