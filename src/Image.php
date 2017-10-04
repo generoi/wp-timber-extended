@@ -176,6 +176,7 @@ class Image extends Timber\Image
     {
         $src = Timber\ImageHelper::img_to_jpg($this->src);
         $this->init($src);
+        $this->src = $src;
         return $this;
     }
 
@@ -191,7 +192,7 @@ class Image extends Timber\Image
         $width = isset($width) ? $width : $this->r_width;
         $height = isset($height) ? $height : $this->r_height;
 
-        $src = Timber\ImageHelper::resize($this->src(), $width, $height);
+        $src = Timber\ImageHelper::resize($this->src, $width, $height);
         return new static($src);
     }
 
@@ -225,21 +226,17 @@ class Image extends Timber\Image
         $width = round($width);
         $height = round($height);
 
-        $src = Timber\ImageHelper::resize($this->src(), $width, $height, $crop);
+        $src = Timber\ImageHelper::resize($this->src, $width, $height, $crop);
         return new static($src);
     }
 
     /** @inheritdoc */
     public function src($size = 'full')
     {
-        if (!isset($this->src_url_cache[$size])) {
-            // Timber\Image::src() returns early if abs_url is set.
-            if (!empty($this->ID)) {
-                $this->abs_url = null;
-            }
-            $this->src_url_cache[$size] = parent::src($size);
+        if (!empty($this->ID)) {
+            $this->abs_url = null;
         }
-        $this->src = $this->src_url_cache[$size];
+        $this->src = parent::src($size);
         $this->abs_url = $this->src;
 
         // Force JPG conversion if set.
@@ -331,7 +328,7 @@ class Image extends Timber\Image
     public function crop_format($size)
     {
         if (!empty($this->yoimg_attachment_metadata)) {
-            $metadata = $this->image->yoimg_attachment_metadata;
+            $metadata = $this->yoimg_attachment_metadata;
             if (!empty($metadata['crop'][$size])) {
                 return $metadata['crop'][$size];
             }
