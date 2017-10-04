@@ -21,6 +21,7 @@ class Image extends Timber\Image
     public $crop;
     /** @var string $src_sizes Sizes attribute value */
     public $src_sizes;
+    public $src_url_cache;
 
     /**
      * Render an image HTML element.
@@ -231,7 +232,15 @@ class Image extends Timber\Image
     /** @inheritdoc */
     public function src($size = 'full')
     {
-        $this->src = parent::src($size);
+        if (!isset($this->src_url_cache[$size])) {
+            // Timber\Image::src() returns early if abs_url is set.
+            if (!empty($this->ID)) {
+                $this->abs_url = null;
+            }
+            $this->src_url_cache[$size] = parent::src($size);
+        }
+        $this->src = $this->src_url_cache[$size];
+        $this->abs_url = $this->src;
 
         // Force JPG conversion if set.
         if ($this->tojpg) {
