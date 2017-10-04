@@ -365,7 +365,7 @@ class Image extends Timber\Image
         return null;
     }
 
-    protected function set_dimensions($width = null, $height = null, $crop = 'default', $tojpg = null)
+    public function set_dimensions($width = null, $height = null, $crop = 'default', $tojpg = null)
     {
         $this->crop = $crop;
 
@@ -377,11 +377,39 @@ class Image extends Timber\Image
             // Thumbnail size name was passed.
             $this->size = $width;
 
-            if ($dimensions = self::get_image_dimensions($width)) {
+            $crop_format = $this->crop_format($this->size);
+            // If there's a replacement image for this breakpoint.
+            if (isset($crop_format['replacement'])) {
+                $this->init($crop_format['replacement']);
+            }
+
+            // YoImage crop
+            if ($crop_format) {
+                $op = new Image\Operation\Crop($crop_format['x'], $crop_format['y'], $crop_format['width'], $crop_format['height']);
+
+                // Use the orignial image name in the filename rather than the
+                // replacement.
+                $au = Timber\ImageHelper::analyze_url($this->file_loc);
+                $new_filename = $op->filename($au['filename'], $au['extension']);
+
+                $source_path = $this->file_loc;
+                $destination_path = Image\Helper::get_destination_path($this->file_loc, $new_filename);
+                $destination_url = Image\Helper::get_destination_url($this->src, $new_filename);
+                Image\Helper::operate($source_path, $destination_path, $op);
+                $this->init($destination_url);
+                $this->src = $destination_url;
+            }
+
+            if ($dimensions = self::get_image_dimensions($this->size)) {
                 // Known size
                 $this->r_width($dimensions['width']);
-                $this->r_height($dimensions['height']);
-                $this->crop($dimensions['crop']);
+
+                if ($crop) {
+                    $this->r_height($dimensions['height']);
+                    $this->crop($dimensions['crop']);
+                } else {
+                    $this->r_height(round($this->height * ($this->r_width / $this->width)));
+                }
             } else {
                 // Unknown size (eg. full)
                 $this->r_width($this->width);
