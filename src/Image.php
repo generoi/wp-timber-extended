@@ -249,6 +249,11 @@ class Image extends Timber\Image
     /** @inheritdoc */
     public function init($iid = false)
     {
+        // Timber takes the ID regardless if it exists or not
+        if ($iid instanceof self && empty($iid->ID)) {
+            $iid = $iid->abs_url;
+        }
+
         parent::init($iid);
 
         // @see https://github.com/timber/timber/issues/1458
