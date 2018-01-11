@@ -25,6 +25,7 @@ class LanguageMenu extends Menu
 
     public function __construct($slug = 0)
     {
+        $this->set_timber_classes($slug);
         $this->slug = $slug;
         $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $this->slug);
         $this->add_class($this->classPrefix);

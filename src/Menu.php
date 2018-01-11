@@ -22,10 +22,19 @@ class Menu extends Timber\Menu
     public $classes = [];
     public $class = '';
 
-  // Eg. .nav-primary-menu
+    // Eg. .nav-primary-menu
     public $classPrefix;
 
     public function __construct($slug = 0)
+    {
+        $this->set_timber_classes($slug);
+        parent::__construct($slug);
+
+        $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $slug);
+        $this->add_class($this->classPrefix);
+    }
+
+    public function set_timber_classes($slug)
     {
         if ($this->PostClass === 'Timber\Post') {
             $this->PostClass = TimberExtended::get_object_class('post', null, $slug);
@@ -33,11 +42,6 @@ class Menu extends Timber\Menu
         if ($this->MenuItemClass === 'Timber\MenuItem') {
             $this->MenuItemClass = TimberExtended::get_object_class('menuitem', null, $slug);
         }
-
-        parent::__construct($slug);
-
-        $this->classPrefix = apply_filters('timber-extended/menu-class-prefix', $slug);
-        $this->add_class($this->classPrefix);
     }
 
     public function set_prefix($new)
