@@ -155,6 +155,14 @@ class TwigExtensions extends Module
      */
     public function fn_image($iid, $image_class = null)
     {
+        // Timber\Image only supports ID's or URLs
+        if (is_array($iid) && !empty($iid['id'])) {
+            $iid = $iid['id'];
+        }
+        if (is_object($iid) && !empty($iid->id)) {
+            $iid = $iid->id;
+        }
+
         return TimberExtended::object_getter('image', $iid, $image_class);
     }
 
