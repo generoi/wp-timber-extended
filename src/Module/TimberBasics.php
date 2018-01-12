@@ -4,7 +4,6 @@ namespace TimberExtended\Module;
 
 use Timber;
 use TimberExtended;
-use WPSEO_Options;
 
 class TimberBasics extends Module
 {
@@ -35,23 +34,10 @@ class TimberBasics extends Module
      */
     public function add_timber_context($context)
     {
-        $context['site']->theme_options = get_theme_mods();
+        $site_class = TimberExtended::get_object_class('site', null, $context);
+
+        $context['site'] = new $site_class();
         $context['title'] = self::page_title();
-        $image_class = TimberExtended::get_object_class('image');
-
-        if ($icon = get_site_icon_url()) {
-            $context['site']->icon = new $image_class(get_site_icon_url());
-        }
-        if ($logo_id = get_theme_mod('custom_logo')) {
-            $context['site']->logo = new $image_class($logo_id);
-        }
-        // Timber doesn't support bedrock-like directory structures.
-        $context['site']->siteurl = get_site_url();
-
-        // Add Yoast social options if available.
-        if (class_exists('WPSEO_Options')) {
-            $context['site']->social = WPSEO_Options::get_option('wpseo_social');
-        }
         return $context;
     }
 

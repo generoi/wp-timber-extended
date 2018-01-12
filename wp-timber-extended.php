@@ -209,6 +209,9 @@ class TimberExtended
     {
         if (!isset($class_name)) {
             switch ($type) {
+                case 'site':
+                    $class_name = 'TimberExtended\\Site';
+                    break;
                 case 'image':
                     $class_name = 'TimberExtended\\Image';
                     break;
