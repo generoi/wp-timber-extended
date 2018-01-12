@@ -3,7 +3,7 @@
 Plugin Name:        Timber Extended
 Plugin URI:         http://genero.fi
 Description:        Replace Wordpress templating system with timber and extend it further.
-Version:            0.0.1
+Version:            2.0.0-alpha.4
 Author:             Genero
 Author URI:         http://genero.fi/
 
@@ -18,7 +18,9 @@ if (!defined('ABSPATH')) {
 class TimberExtended
 {
     private static $instance = null;
-    public $version = '1.0.0';
+    public $version = '2.0.0';
+    public $plugin_name = 'wp-timber-extended';
+    public $github_url = 'https://github.com/generoi/wp-timber-extended';
 
     public static function get_instance()
     {
@@ -28,9 +30,15 @@ class TimberExtended
         return self::$instance;
     }
 
-    public function init()
+    public function __construct()
     {
         register_activation_hook(__FILE__, [__CLASS__, 'activate']);
+        Puc_v4_Factory::buildUpdateChecker($this->github_url, __FILE__, $this->plugin_name);
+        add_action('plugins_loaded', [$this, 'init']);
+    }
+
+    public function init()
+    {
         add_action('after_setup_theme', ['TimberExtended\\Module\\Module', 'load_modules'], 99);
         add_action('debug_bar_panels', [$this, 'add_debug_bar']);
     }
@@ -272,4 +280,4 @@ if (file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
     require_once $composer;
 }
 
-TimberExtended::get_instance()->init();
+TimberExtended::get_instance();
