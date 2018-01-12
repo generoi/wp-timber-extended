@@ -3,7 +3,7 @@
 Plugin Name:        Timber Extended
 Plugin URI:         http://genero.fi
 Description:        Replace Wordpress templating system with timber and extend it further.
-Version:            2.0.0-alpha.4
+Version:            2.0.0-alpha.5
 Author:             Genero
 Author URI:         http://genero.fi/
 
