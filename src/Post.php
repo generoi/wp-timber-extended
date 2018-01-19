@@ -30,12 +30,20 @@ class Post extends Timber\Post
         if (!isset($this->UserClass)) {
             $this->UserClass = TimberExtended::get_object_class('user', null, $this);
         }
+        if (!isset($this->PostPreviewClass)) {
+            $this->PostPreviewClass = TimberExtended::get_object_class('postpreview', null, $this);
+        }
         if ($this->TermClass === 'Timber\Term') {
             $this->TermClass = TimberExtended::get_object_class('term', null, $this);
         }
         if ($this->ImageClass === 'Timber\Image') {
             $this->ImageClass = TimberExtended::get_object_class('image', null, $this);
         }
+    }
+
+    /** @inheritdoc */
+    public function preview() {
+        return new $this->PostPreviewClass($this);
     }
 
     /** @inheritdoc */

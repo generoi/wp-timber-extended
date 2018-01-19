@@ -218,6 +218,9 @@ class TimberExtended
                 case 'post':
                     $class_name = 'TimberExtended\\Post';
                     break;
+                case 'postpreview':
+                    $class_name = 'TimberExtended\\PostPreview';
+                    break;
                 case 'widget':
                     $class_name = 'TimberExtended\\Widget';
                     break;
