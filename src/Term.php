@@ -45,4 +45,30 @@ class Term extends Timber\Term
     {
         return apply_filters('the_content', $this->description);
     }
+
+    /**
+     * Get the ancestor of a term.
+     *
+     * @return Term
+     */
+    public function ancestor()
+    {
+        $ancestors = $this->ancestors;
+        if (!empty($ancestors)) {
+            return array_pop($ancestors);
+        }
+    }
+
+    /**
+     * Get the ancestors of the term.
+     *
+     * @return Term[]
+     */
+    public function ancestors()
+    {
+        $ancestors = get_ancestors($this->ID, $this->taxonomy);
+        $this->ancestors = !empty($ancestors) ? Timber::get_terms($ancestors) : [];
+        return $this->ancestors;
+    }
+
 }
