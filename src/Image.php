@@ -256,9 +256,7 @@ class Image extends Timber\Image
 
         parent::init($iid);
 
-        // @see https://github.com/timber/timber/issues/1458
-        $this->file_loc = str_replace('web/wp/app', 'web/app', $this->file_loc);
-        $this->file = str_replace('web/wp/app', 'web/app', $this->file);
+        apply_filters('timber_extended/image/init', $this);
     }
 
     /**

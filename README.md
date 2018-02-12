@@ -102,4 +102,9 @@ add_filter('timber_extended/class', function ($class_name, $type, $object = null
 add_filter('timber_extended/{user,widget,image,post,term,menu,menuitem}/class', function ($class_name, $object = null) {
   return __NAMESPACE__ . '\\User';
 });
+
+add_filter('timber_extended/image/init'', function ($image) {
+  $image->file_loc = '';
+  return $image;
+});
 ```

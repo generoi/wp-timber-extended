@@ -40,6 +40,7 @@ class TimberExtended
     public function init()
     {
         add_action('after_setup_theme', ['TimberExtended\\Module\\Module', 'load_modules'], 99);
+        add_action('timber_extended/image/init', [$this, 'fix_bedrock_image_init']);
         add_action('debug_bar_panels', [$this, 'add_debug_bar']);
     }
 
@@ -55,6 +56,20 @@ class TimberExtended
         require_once __DIR__ . '/src/DebugBar.php';
         $panels[] = new TimberExtended_DebugBar();
         return $panels;
+    }
+
+    /**
+     * Filter callback which fixes incorrect paths during Timber init.
+     *
+     * @param Timber\Image $image
+     * @return Timber\Image
+     * @see https://github.com/timber/timber/issues/1458
+     */
+    public function fix_bedrock_image_init($image)
+    {
+        $image->file_loc = str_replace('web/wp/app', 'web/app', $image->file_loc);
+        $image->file = str_replace('web/wp/app', 'web/app', $image->file);
+        return $image;
     }
 
     /**
