@@ -10,8 +10,15 @@ class Woocommerce
     public function __construct()
     {
         add_filter('wc_get_template', [__CLASS__, 'wc_get_template'], 10, 5);
+
         // Remove woocommerce own template loader.
-        remove_filter('template_include', ['WC_Template_Loader', 'template_loader']);
+        if ($this->woocommerce_verify_version('3.3')) {
+            add_action('init', function () {
+                remove_filter('template_include', ['WC_Template_Loader', 'template_loader']);
+            }, 11);
+        } else {
+            remove_filter('template_include', ['WC_Template_Loader', 'template_loader']);
+        }
     }
 
     /**
@@ -42,5 +49,22 @@ class Woocommerce
             return locate_template('index.php');
         }
         return $located;
+    }
+
+    /**
+     * Check if the woocommerce version verifies.
+     *
+     * @param string $version
+     * @param string $comparator
+     * @return bool
+     */
+    protected function woocommerce_verify_version($version, $comparator = '>=') {
+        if (class_exists('WooCommerce')) {
+            global $woocommerce;
+            if (version_compare($woocommerce->version, $version, $comparator)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
