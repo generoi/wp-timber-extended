@@ -30,9 +30,11 @@ class Term extends Timber\Term
      */
     public function thumbnail()
     {
-        if ($thumbnail = $this->get_field('thumbnail')) {
-            $this->thumbnail = new $this->ImageClass($thumbnail);
-            return $this->thumbnail;
+        foreach (['thumbnail_id', 'thumbnail'] as $field) {
+            if ($thumbnail = $this->get_field($field)) {
+                $this->thumbnail = new $this->ImageClass($thumbnail);
+                return $this->thumbnail;
+            }
         }
     }
 
