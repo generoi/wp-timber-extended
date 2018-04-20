@@ -168,15 +168,19 @@ class Image extends Timber\Image
     }
 
     /**
-     * Reinitialize the current image as a JPG.
+     * Reinitialize the current image as a JPG or turn of toJPG
      *
      * @return Image
      */
-    public function tojpg()
+    public function tojpg($tojpg = true)
     {
-        $src = Timber\ImageHelper::img_to_jpg($this->src);
-        $this->init($src);
-        $this->src = $src;
+        if ($tojpg) {
+            $src = Timber\ImageHelper::img_to_jpg($this->src);
+            $this->init($src);
+            $this->src = $src;
+        } else {
+            $this->tojpg = false;
+        }
         return $this;
     }
 
@@ -193,7 +197,7 @@ class Image extends Timber\Image
         $height = isset($height) ? $height : $this->r_height;
 
         $src = Timber\ImageHelper::resize($this->src, $width, $height);
-        return new static($src);
+        return $this->copySelf($src);
     }
 
     /**
@@ -227,7 +231,7 @@ class Image extends Timber\Image
         $height = round($height);
 
         $src = Timber\ImageHelper::resize($this->src, $width, $height, $crop);
-        return new static($src);
+        return $this->copySelf($src);
     }
 
     /** @inheritdoc */
@@ -246,7 +250,7 @@ class Image extends Timber\Image
         // Sanitize spaces for "child" images.
         if (!$this->id) {
             $this->src = preg_replace('/\s+/', '%20', $this->src);
-        }        
+        }
         return $this->src;
     }
 
@@ -435,5 +439,12 @@ class Image extends Timber\Image
             $this->r_width($this->width);
             $this->r_height($this->height);
         }
+    }
+
+    protected function copySelf($init)
+    {
+        $copy = new static($init);
+        $copy->tojpg = $this->tojpg;
+        return $copy;
     }
 }
