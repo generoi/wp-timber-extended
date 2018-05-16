@@ -249,7 +249,7 @@ class Image extends Timber\Image
         }
         // Sanitize spaces for "child" images.
         if (!$this->id) {
-            $this->src = preg_replace('/\s+/', '%20', $this->src);
+            $this->src = preg_replace('/\s{1}/', '%20', $this->src);
         }
         return $this->src;
     }

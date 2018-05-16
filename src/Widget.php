@@ -187,7 +187,7 @@ class Widget extends Timber\Core implements Timber\CoreInterface
     public function get_field($field_name, $id = null)
     {
         if (!isset($id)) {
-            $id = $this->acfw;
+            $id = 'widget_' . $this->acfw;
         }
         return get_field($field_name, $id);
     }
