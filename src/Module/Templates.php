@@ -40,7 +40,7 @@ class Templates extends Module
         foreach ([
             'index', '404', 'archive', 'author', 'category', 'tag', 'taxonomy',
             'date', 'embed', 'home', 'frontpage', 'page', 'paged', 'search',
-            'single', 'singular', 'attachment'
+            'single', 'singular', 'attachment', 'timber'
         ] as $type) {
             add_filter("${type}_template_hierarchy", [$this, 'add_template_suggestions']);
         }
