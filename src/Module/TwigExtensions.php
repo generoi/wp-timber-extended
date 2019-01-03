@@ -359,7 +359,7 @@ class TwigExtensions extends Module
         if (!isset($height)) {
             $height = round($width / 1.5);
         }
-        return "<img width=\"$width\" height=\"$height\" src=\"https://placehold.it/{$width}x{$height}\"";
+        return "<img width=\"$width\" height=\"$height\" src=\"https://placehold.it/{$width}x{$height}\">";
     }
 
     // Functional
