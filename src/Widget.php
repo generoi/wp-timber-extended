@@ -58,6 +58,10 @@ class Widget extends Timber\Core implements Timber\CoreInterface
         'args', 'context', 'name', 'id', 'params', 'instance', 'templates',
     ];
 
+    public $acfw;
+    public $extended_widget_opts;
+    public $hide_title;
+
     /**
      * Create a Widget
      *

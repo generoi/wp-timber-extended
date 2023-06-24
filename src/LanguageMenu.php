@@ -23,6 +23,8 @@ class LanguageMenu extends Menu
         'order' => 'desc',
     ];
 
+    public $slug;
+
     public function __construct($slug = 0)
     {
         $this->set_timber_classes($slug);

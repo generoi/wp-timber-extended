@@ -14,6 +14,12 @@ class Post extends Timber\Post
     /** @var array Cache of related post queries */
     protected $cache_related_posts = [];
 
+    public $thumbnail;
+    public $ancestors;
+    public $author;
+    public $UserClass;
+    public $PostPreviewClass;
+
     /** @inheritdoc */
     public function __construct($pid = null)
     {

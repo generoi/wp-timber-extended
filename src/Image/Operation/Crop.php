@@ -6,6 +6,11 @@ use Timber;
 
 class Crop extends Timber\Image\Operation
 {
+    public $x;
+    public $y;
+    public $width;
+    public $height;
+
     /**
      * @param int $x
      * @param int $y

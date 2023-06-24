@@ -21,6 +21,7 @@ class Menu extends Timber\Menu
 {
     public $classes = [];
     public $class = '';
+    public $_recursed_items;
 
     // Eg. .nav-primary-menu
     public $classPrefix;

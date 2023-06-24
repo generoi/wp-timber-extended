@@ -32,7 +32,6 @@ class TimberExtended
 
     public function __construct()
     {
-        register_activation_hook(__FILE__, [__CLASS__, 'activate']);
         Puc_v4_Factory::buildUpdateChecker($this->github_url, __FILE__, $this->plugin_name);
         add_action('plugins_loaded', [$this, 'init']);
     }
@@ -275,25 +274,6 @@ class TimberExtended
         }
 
         return $class_name;
-    }
-
-    /**
-     * Activate plugin.
-     */
-    public static function activate()
-    {
-        foreach ([
-            'timber-library/timber.php' => 'Timber Library',
-            // 'wp-timber-extended/wp-timber-extended.php' => 'WP Timber Extended',
-        ] as $plugin => $name) {
-            if (!is_plugin_active($plugin) && current_user_can('activate_plugins')) {
-                wp_die(sprintf(
-                    __('Sorry, but this plugin requires the %s plugin to be installed and active. <br><a href="%s">&laquo; Return to Plugins</a>', 'wp-hero'),
-                    $name,
-                    admin_url('plugins.php')
-                ));
-            }
-        }
     }
 }
 

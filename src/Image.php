@@ -22,6 +22,9 @@ class Image extends Timber\Image
     /** @var string $src_sizes Sizes attribute value */
     public $src_sizes;
     public $src_url_cache;
+    public $src;
+    public $srcset;
+    public $tag;
 
     /**
      * Render an image HTML element.

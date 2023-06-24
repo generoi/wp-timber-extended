@@ -7,6 +7,10 @@ use TimberExtended;
 
 class Term extends Timber\Term
 {
+    public $ImageClass;
+    public $thumbnail;
+    public $ancestors;
+
     /** @inheritdoc */
     public function __construct($tid = null, $tax = '')
     {
