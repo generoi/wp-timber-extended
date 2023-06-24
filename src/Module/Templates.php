@@ -216,7 +216,7 @@ class Templates extends Module
         foreach ($templates as $idx => $template) {
             if (preg_match('/([^-]+)-(.*)/', $template, $matches)) {
                 list(, $type, $suffix) = $matches;
-                array_splice($templates, $idx, 0, "${type}--${suffix}");
+                array_splice($templates, $idx, 0, "{$type}--{$suffix}");
             }
         }
         return $templates;
