@@ -42,7 +42,7 @@ class Templates extends Module
             'date', 'embed', 'home', 'frontpage', 'page', 'paged', 'search',
             'single', 'singular', 'attachment', 'timber'
         ] as $type) {
-            add_filter("${type}_template_hierarchy", [$this, 'add_template_suggestions']);
+            add_filter("{$type}_template_hierarchy", [$this, 'add_template_suggestions']);
         }
 
         add_filter('timber/context', [$this, 'add_default_context'], -99, 1);
