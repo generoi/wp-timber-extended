@@ -11,8 +11,6 @@ class Site extends Timber\Site
     public $ImageClass = 'Timber\Image';
 
     public $social;
-    public $icon;
-    public $theme_options;
 
     /** @inheritdoc */
     public function __construct($site_name_or_id = null)
