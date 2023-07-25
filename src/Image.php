@@ -45,7 +45,7 @@ class Image extends Timber\Image
         $this->set_dimensions($width, $height, $crop, $tojpg);
 
         $content = '<div class="' . $this->wrapper_class . '" style="padding-bottom: ' .  ($this->intrinsic_ratio() * 100) . '%;">';
-        $content .= $this->tag;
+        $content .= $this->tag();
         $content .= '</div>';
 
         return $content;
@@ -66,12 +66,13 @@ class Image extends Timber\Image
             $this->set_dimensions($width, $height, $crop, $tojpg);
         }
 
-        $attributes['alt'] = $this->alt;
-        $attributes['title'] = $this->title;
-        $attributes['srcset'] = $this->srcset;
+        $attributes['alt'] = $this->alt();
+        $attributes['title'] = $this->title();
+        $attributes['src'] = $this->src();
+        $attributes['srcset'] = $this->srcset();
 
         if ($this->src_sizes) {
-            $attributes['sizes'] = $this->src_sizes;
+            $attributes['sizes'] = $this->src_sizes();
         }
 
         if ($this->has_smartcrop()) {
@@ -105,24 +106,24 @@ class Image extends Timber\Image
 
         // If the full size was requested, render as is.
         if ($this->size && $this->size === 'full') {
-            return $this->src;
+            return $this->src();
         }
 
         $normal = $this->resize();
         $retina = $this->retina();
 
-        $sources[] = $normal->src . ' ' . $normal->width . 'w';
+        $sources[] = $normal->src() . ' ' . $normal->width . 'w';
 
-        if ($retina->src && ($retina->src != $normal->src)) {
-            $sources[] = $retina->src . ' 2x';
-            $sources[] = $retina->src . ' ' . $retina->width .'w';
+        if ($retina->src() && ($retina->src() != $normal->src())) {
+            $sources[] = $retina->src() . ' 2x';
+            $sources[] = $retina->src() . ' ' . $retina->width .'w';
         }
 
         // If it's a larger image, provide a version in half it's size.
         if ($this->r_width > 400) {
             $half = $this->resize(round($this->r_width/2), round($this->r_height/2));
 
-            if ($half->src != $normal->src) {
+            if ($half->src() != $normal->src()) {
                 $sources[] = $half->src . ' ' . $half->width .'w';
             }
         }
