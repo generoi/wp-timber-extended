@@ -62,8 +62,11 @@ class Templates extends Module
     public function add_default_context($context)
     {
         if (TimberExtended::is_page_type(['embed', 'single', 'page', 'singular'])) {
+            // WP requires in_the_loop to be true for loading attributes to be added.
+            the_post();
             // Single posts
             $post = get_post();
+
             $post_class = TimberExtended::get_object_class('post', null, $post);
             $context['post'] = new $post_class($post);
 
