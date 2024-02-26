@@ -90,7 +90,7 @@ class TwigExtensions extends Module
      */
     public function add_functional($twig)
     {
-        $twig->addFilter(new Twig_SimpleFilter('filter', [$this, 'filter_filter']));
+        $twig->addFilter(new Twig_SimpleFilter('fn_filter', [$this, 'filter_filter']));
         $twig->addFilter(new Twig_SimpleFilter('obj_merge', [$this, 'filter_obj_merge']));
         $twig->addFilter(new Twig_SimpleFilter('map', [$this, 'filter_map']));
         $twig->addFilter(new Twig_SimpleFilter('values', [$this, 'filter_values']));
