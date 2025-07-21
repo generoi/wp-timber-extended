@@ -20,7 +20,6 @@ class TimberExtended
     private static $instance = null;
     public $version = '2.0.0';
     public $plugin_name = 'wp-timber-extended';
-    public $github_url = 'https://github.com/generoi/wp-timber-extended';
 
     public static function get_instance()
     {
@@ -32,7 +31,6 @@ class TimberExtended
 
     public function __construct()
     {
-        Puc_v4_Factory::buildUpdateChecker($this->github_url, __FILE__, $this->plugin_name);
         add_action('plugins_loaded', [$this, 'init']);
     }
 
