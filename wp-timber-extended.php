@@ -64,8 +64,12 @@ class TimberExtended
      */
     public function fix_bedrock_image_init($image)
     {
-        $image->file_loc = str_replace('web/wp/app', 'web/app', $image->file_loc);
-        $image->file = str_replace('web/wp/app', 'web/app', $image->file);
+        // Both are null for images without a local file (eg. external URLs).
+        foreach (['file_loc', 'file'] as $property) {
+            if (is_string($image->$property)) {
+                $image->$property = str_replace('web/wp/app', 'web/app', $image->$property);
+            }
+        }
         return $image;
     }
 
